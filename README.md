@@ -12,6 +12,7 @@
 
 [![CI](https://github.com/gitsual/design-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/gitsual/design-bridge/actions/workflows/ci.yml)
 [![Lint](https://github.com/gitsual/design-bridge/actions/workflows/lint.yml/badge.svg)](https://github.com/gitsual/design-bridge/actions/workflows/lint.yml)
+[![Live Storybooks](https://img.shields.io/badge/live-Storybooks-ff4785.svg)](https://gitsual.github.io/design-bridge/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
 [![Frameworks](https://img.shields.io/badge/adapters-Angular%20%7C%20Vue-informational.svg)](./docs/registry.md)
@@ -86,6 +87,12 @@ palette is enough — no component knows a theme exists.
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/storybook-dark.png">
   <img src="docs/assets/storybook-light.png" alt="The generated stories running in Storybook" width="860">
 </picture>
+
+> **See it running, without installing anything:**
+> **[gitsual.github.io/design-bridge](https://gitsual.github.io/design-bridge/)** publishes both
+> example Storybooks — [Vue](https://gitsual.github.io/design-bridge/vue/) and
+> [Angular](https://gitsual.github.io/design-bridge/angular/) — built from the same registry and
+> the same token set on every push to `main`.
 
 ## 🪜 The pipeline, step by step
 
