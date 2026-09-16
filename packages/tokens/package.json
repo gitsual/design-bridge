@@ -9,8 +9,16 @@
     "./dtcg": "./src/dtcg.mjs",
     "./build": "./src/build.mjs"
   },
-  "bin": { "design-bridge-tokens": "./src/cli.mjs" },
-  "files": ["src"],
-  "scripts": { "test": "node --test 'test/*.test.mjs'" },
-  "engines": { "node": ">=20" }
+  "bin": {
+    "design-bridge-tokens": "./src/cli.mjs"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
 }
