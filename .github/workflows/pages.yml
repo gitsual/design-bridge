@@ -61,7 +61,7 @@ jobs:
           cp -r examples/vue-lib/storybook-static site/vue
           cp -r examples/angular-lib/storybook-static site/angular
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
