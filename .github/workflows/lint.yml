@@ -1,0 +1,58 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: node --check every .mjs/.js file under packages/
+        run: |
+          shopt -s globstar nullglob
+          files=(packages/**/*.mjs packages/**/*.js)
+          echo "Checking ${#files[@]} file(s)"
+          status=0
+          for file in "${files[@]}"; do
+            node --check "$file" || status=1
+          done
+          exit $status
+
+  registry-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate example registries against the schema
+        run: |
+          node --input-type=module -e "
+          import fs from 'node:fs';
+          import { validateRegistry } from './packages/registry/src/schema.mjs';
+
+          const registries = [
+            'examples/vue-lib/registry.json',
+            'examples/angular-lib/registry.json',
+          ];
+
+          let failed = false;
+          for (const path of registries) {
+            const registry = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const { valid, errors } = validateRegistry(registry);
+            if (valid) {
+              console.log(\`ok: \${path}\`);
+            } else {
+              failed = true;
+              console.error(\`invalid: \${path}\`);
+              for (const error of errors) console.error(\`  - \${error}\`);
+            }
+          }
+          if (failed) process.exit(1);
+          "

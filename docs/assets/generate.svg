@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="290" viewBox="0 0 880 290" role="img" aria-label="design-bridge-generate — registry to stories, in dependency order">
+  <title>design-bridge-generate — registry to stories, in dependency order</title>
+  <rect width="880" height="290" rx="10" fill="#11141b" stroke="#2a303d"/>
+  <rect width="880" height="42" rx="10" fill="#1b1f2a"/>
+  <rect y="32" width="880" height="10" fill="#1b1f2a"/>
+  <line x1="0" y1="42" x2="880" y2="42" stroke="#2a303d"/>
+  <circle cx="22" cy="21" r="6" fill="#f7768e" opacity=".85"/><circle cx="41" cy="21" r="6" fill="#e0af68" opacity=".85"/><circle cx="60" cy="21" r="6" fill="#9ece6a" opacity=".85"/>
+  <text x="440" y="26" fill="#79839a" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12">design-bridge-generate — registry to stories, in dependency order</text>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">
+    <text x="20" y="52" fill="#7aa2f7" xml:space="preserve">$ npx design-bridge-generate --registry examples/vue-lib/registry.json --out src/stories/generated</text>
+    <text x="20" y="92" fill="#d6dae4" xml:space="preserve">Generated 5 file(s) into examples/vue-lib/src/stories/generated</text>
+    <text x="20" y="112" fill="#d6dae4" xml:space="preserve">  3 components, 11 stories</text>
+    <text x="20" y="132" fill="#d6dae4" xml:space="preserve">  import plan: L0 (1) -&gt; L1 (1) -&gt; L2 (1)</text>
+    <text x="20" y="172" fill="#7aa2f7" xml:space="preserve">$ jq -r &quot;.importPlan[] | \&quot;\(.title): \(.componentIds|join(\&quot;, \&quot;))\&quot;&quot; manifest.json</text>
+    <text x="20" y="212" fill="#d6dae4" xml:space="preserve">  Atoms     icon</text>
+    <text x="20" y="232" fill="#d6dae4" xml:space="preserve">  Layer 1   button</text>
+    <text x="20" y="252" fill="#d6dae4" xml:space="preserve">  Layer 2   card</text>
+  </g>
+</svg>

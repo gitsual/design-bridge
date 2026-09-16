@@ -1,5 +1,11 @@
 # design-bridge
 
+[![CI](https://github.com/gitsual/design-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/gitsual/design-bridge/actions/workflows/ci.yml)
+[![Lint](https://github.com/gitsual/design-bridge/actions/workflows/lint.yml/badge.svg)](https://github.com/gitsual/design-bridge/actions/workflows/lint.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
+[![Frameworks](https://img.shields.io/badge/adapters-Angular%20%7C%20Vue-informational.svg)](./docs/registry.md)
+
 A two-way bridge between Figma and a component library.
 
 - **Figma → code**: pull Figma Variables and turn them into design tokens —
@@ -13,6 +19,50 @@ npm workspaces monorepo (`packages/*` only — the examples under `examples/`
 are standalone consumers with their own `package.json`, so CI never installs
 Angular or Storybook to run the test suite): `@design-bridge/tokens`, `@design-bridge/registry`,
 `@design-bridge/generator`, `@design-bridge/figma-plugin`.
+
+## What it looks like
+
+The same three components, the same registry, the same fifteen tokens — in both
+themes. Nothing below is a mockup: every image is produced by the commands in
+this README.
+
+| Light | Dark |
+| --- | --- |
+| <img src="docs/assets/story-button-light.png" alt="Button story, light theme" width="420"> | <img src="docs/assets/story-button-dark.png" alt="Button story, dark theme" width="420"> |
+| <img src="docs/assets/story-card-light.png" alt="Card story, light theme" width="420"> | <img src="docs/assets/story-card-dark.png" alt="Card story, dark theme" width="420"> |
+
+Switching the theme rewrites one block of custom properties. Because semantic
+tokens are emitted as `var(--palette-…)` rather than as literals, overriding the
+palette is enough — no component knows a theme exists.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/storybook-dark.png">
+  <img src="docs/assets/storybook-light.png" alt="The generated stories running in Storybook" width="860">
+</picture>
+
+### The pipeline, end to end
+
+Pull Figma Variables and emit the platform artefacts:
+
+<img src="docs/assets/tokens-build.svg" alt="design-bridge-tokens build output" width="720">
+
+Generate the stories, and with them the import plan — the order the components
+must reach Figma in:
+
+<img src="docs/assets/generate.svg" alt="design-bridge-generate output showing the dependency-ordered import plan" width="800">
+
+Then the bundled Figma plugin turns the flat `story.to.design` import back into
+real Component Sets, grouped by family:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/figma-plugin-dark.png">
+  <img src="docs/assets/figma-plugin-light.png" alt="Design Bridge Organizer plugin panel" width="380">
+</picture>
+
+And the whole thing is covered:
+
+<img src="docs/assets/tests.svg" alt="npm test output, 66 tests passing" width="560">
+
 
 ## Architecture
 

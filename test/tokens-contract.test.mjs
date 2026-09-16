@@ -50,8 +50,8 @@ const css = read('examples/shared/dist/tokens.css');
 const declared = declaredTokens(css);
 
 const componentFiles = [
-  ...filesIn('examples/vue-lib/lib', '.vue'),
-  ...filesIn('examples/angular-lib/lib', '.ts'),
+  ...filesIn('examples/vue-lib/src/lib', '.vue'),
+  ...filesIn('examples/angular-lib/src/lib', '.ts'),
 ];
 
 test('the built stylesheet declares tokens at all', () => {
@@ -74,8 +74,8 @@ test('Vue and Angular examples consume the SAME token set', () => {
     for (const file of files) for (const token of referencedTokens(read(file))) all.add(token);
     return [...all].sort();
   };
-  const vue = collect(filesIn('examples/vue-lib/lib', '.vue'));
-  const angular = collect(filesIn('examples/angular-lib/lib', '.ts'));
+  const vue = collect(filesIn('examples/vue-lib/src/lib', '.vue'));
+  const angular = collect(filesIn('examples/angular-lib/src/lib', '.ts'));
   assert.deepEqual(angular, vue, 'the two frameworks must prove the same tokens drive both');
 });
 
@@ -94,8 +94,8 @@ test('components declare no hard-coded hex colours', () => {
 
 test('both example registries name every component file that exists', () => {
   for (const [registryPath, libDir, extension] of [
-    ['examples/vue-lib/registry.json', 'examples/vue-lib/lib', '.vue'],
-    ['examples/angular-lib/registry.json', 'examples/angular-lib/lib', '.ts'],
+    ['examples/vue-lib/registry.json', 'examples/vue-lib/src/lib', '.vue'],
+    ['examples/angular-lib/registry.json', 'examples/angular-lib/src/lib', '.ts'],
   ]) {
     const registry = JSON.parse(read(registryPath));
     assert.equal(

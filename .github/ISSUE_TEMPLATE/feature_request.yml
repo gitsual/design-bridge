@@ -1,0 +1,49 @@
+name: Feature request
+description: Suggest a change or an addition to design-bridge.
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        design-bridge is deliberately narrow (see
+        [Prior art / alternatives](../../README.md#prior-art--alternatives) and
+        [ROADMAP.md](../../ROADMAP.md)). Before filing, check whether the request
+        fits that scope or belongs to a tool it already delegates to
+        (Style Dictionary, Tokens Studio, story.to.design, Figma Code Connect).
+
+  - type: dropdown
+    id: direction
+    attributes:
+      label: Which direction of the bridge does this affect?
+      options:
+        - "Direction A — Figma Variables → tokens"
+        - "Direction B — registry → Storybook → Figma"
+        - "Both"
+        - "Not applicable"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the situation today and why it's not sufficient.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like to happen? Include a sketch of the registry/token shape or CLI flag if relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workaround you're using today, or other tools you evaluated.
+    validations:
+      required: false

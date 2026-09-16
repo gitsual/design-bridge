@@ -6,7 +6,7 @@
       "id": "icon",
       "name": "Icon",
       "family": "atoms",
-      "import": { "module": "../../../lib/Icon.vue", "symbol": "default" },
+      "import": { "module": "../../lib/Icon.vue", "symbol": "default" },
       "controls": [
         { "prop": "name", "kind": "select", "options": ["check", "alert", "arrow"] },
         { "prop": "size", "kind": "number" }
@@ -22,7 +22,7 @@
       "name": "Button",
       "family": "atoms",
       "dependsOn": ["icon"],
-      "import": { "module": "../../../lib/Button.vue", "symbol": "default" },
+      "import": { "module": "../../lib/Button.vue", "symbol": "default" },
       "controls": [
         { "prop": "variant", "kind": "select", "options": ["primary", "secondary", "ghost"] },
         { "prop": "size", "kind": "select", "options": ["sm", "md"] },
@@ -43,7 +43,7 @@
       "name": "Card",
       "family": "molecules",
       "dependsOn": ["button"],
-      "import": { "module": "../../../lib/Card.vue", "symbol": "default" },
+      "import": { "module": "../../lib/Card.vue", "symbol": "default" },
       "controls": [
         { "prop": "title", "kind": "text" },
         { "prop": "body", "kind": "text" },

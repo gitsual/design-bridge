@@ -1,8 +1,19 @@
 import type { Preview } from '@storybook/vue3-vite';
 import '../../shared/dist/tokens.css';
 
-// Registers a toolbar toggle so the dark-mode tokens (tokens.css's
-// `:root[data-theme="dark"]` block) are demonstrable without leaving Storybook.
+/**
+ * Applies the selected theme to <html> so the `:root[data-theme="dark"]` block
+ * in tokens.css takes effect.
+ *
+ * This runs in the decorator body, NOT inside `setup()`. `setup()` only runs
+ * when the story component mounts, so toggling the toolbar would re-render the
+ * story without ever updating the attribute — the toolbar would appear to do
+ * nothing. The decorator body runs on every render, including global changes.
+ */
+const applyTheme = (theme: string) => {
+  document.documentElement.dataset.theme = theme;
+};
+
 const preview: Preview = {
   parameters: {
     controls: { matchers: { color: /(background|color)$/i, date: /Date$/i } },
@@ -21,18 +32,12 @@ const preview: Preview = {
       },
     },
   },
-  initialGlobals: {
-    theme: 'light',
-  },
+  initialGlobals: { theme: 'light' },
   decorators: [
-    (story, context) => ({
-      components: { story },
-      setup() {
-        document.documentElement.dataset.theme = context.globals.theme ?? 'light';
-        return {};
-      },
-      template: '<story />',
-    }),
+    (story, context) => {
+      applyTheme(context.globals.theme ?? 'light');
+      return { components: { story }, template: '<story />' };
+    },
   ],
 };
 
