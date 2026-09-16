@@ -1,0 +1,34 @@
+{
+  "compileOnSave": false,
+  // The Storybook entry files live outside `src/`, and the Angular compiler
+  // only sees what this file declares: leaving them out fails the build with
+  // "preview.ts is missing from the TypeScript compilation".
+  "include": [".storybook/preview.ts", "src/**/*.ts"],
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    // Deliberately NOT enabled. `ng new` turns it on, but Storybook types its
+    // globals as an index signature, so it would force `globals['theme']` on
+    // code that reads fine as `globals.theme`. The flag would be changing
+    // working source to satisfy a preference, not catching a defect.
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
+    "lib": ["ES2022", "dom"],
+    "types": []
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

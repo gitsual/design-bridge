@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "generate": "design-bridge-generate --registry registry.json --out src/stories/generated",
-    "storybook": "npm run generate && storybook dev -p 6006",
-    "build-storybook": "npm run generate && storybook build"
+    "storybook": "npm run generate && ng run example-angular:storybook",
+    "build-storybook": "npm run generate && ng run example-angular:build-storybook"
   },
   "dependencies": {
     "@angular/common": "^18.2.0",
@@ -20,9 +20,12 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.2.0",
     "@angular/animations": "^18.2.0",
+    "@angular/cli": "^18.2.0",
     "@angular/common": "^18.2.0",
     "@angular/compiler": "^18.2.0",
+    "@angular/compiler-cli": "^18.2.0",
     "@angular/core": "^18.2.0",
+    "@angular/forms": "^18.2.0",
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@design-bridge/generator": "file:../../packages/generator",
@@ -31,7 +34,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "storybook": "^8.4.0",
-    "typescript": "^5.6.0",
+    "typescript": "~5.5.4",
     "zone.js": "^0.14.0"
   },
   "engines": {

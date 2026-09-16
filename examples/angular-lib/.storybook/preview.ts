@@ -1,5 +1,7 @@
 import type { Preview } from '@storybook/angular';
-import '../../shared/dist/tokens.css';
+// The token stylesheet is a GLOBAL style, and under the Angular builder those are
+// declared in angular.json's `styles`, not imported from TypeScript: webpack has no
+// loader for a bare .css import here, unlike Vite in the Vue example.
 
 // Registers a toolbar toggle so the dark-mode tokens (tokens.css's
 // `:root[data-theme="dark"]` block) are demonstrable without leaving Storybook.
