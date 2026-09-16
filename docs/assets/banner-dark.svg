@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="260" viewBox="0 0 880 260" role="img" aria-label="design-bridge — a two-way bridge between Figma and your component library. Figma Variables become design tokens; your components become real Figma Component Sets.">
+  <defs>
+    <linearGradient id="cable" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f24e1e"/>
+      <stop offset="0.45" stop-color="#a259ff"/>
+      <stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f24e1e"/>
+      <stop offset="0.55" stop-color="#a259ff"/>
+      <stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="880" height="260" fill="#0d1017"/>
+  <rect x="1" y="1" width="878" height="258" rx="20" fill="#11141b"/>
+
+  <g transform="translate(56,74) scale(1.15)">
+    <path d="M26 26 Q48 62 70 26" fill="none" stroke="url(#cable)" stroke-width="5" stroke-linecap="round"/>
+    <g stroke="#8b94a8" stroke-width="2.5" stroke-linecap="round" opacity="0.7">
+      <line x1="35" y1="40" x2="35" y2="62"/><line x1="48" y1="49" x2="48" y2="62"/><line x1="61" y1="40" x2="61" y2="62"/>
+    </g>
+    <rect x="22.5" y="22" width="7" height="42" rx="3.5" fill="#f24e1e"/>
+    <rect x="66.5" y="22" width="7" height="42" rx="3.5" fill="#3b82f6"/>
+    <rect x="12" y="60" width="72" height="8" rx="4" fill="#e7ebf3"/>
+    <g fill="#8b94a8"><rect x="23" y="68" width="6" height="12" rx="3"/><rect x="45" y="68" width="6" height="12" rx="3"/><rect x="67" y="68" width="6" height="12" rx="3"/></g>
+  </g>
+
+  <text x="192" y="118" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="58" font-weight="800" letter-spacing="-1.5" fill="#e7ebf3">design<tspan fill="url(#word)">-bridge</tspan></text>
+  <text x="195" y="152" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#8b94a8">Your design system, in both directions. Figma ⇄ Angular &amp; Vue, through Storybook.</text>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12.5">
+    <rect x="195" y="176" width="160" height="30" rx="15" fill="#1b1f2a" stroke="#2a3040"/>
+    <text x="211" y="196" fill="#8b94a8">Variables → tokens</text>
+    <rect x="367" y="176" width="186" height="30" rx="15" fill="#1b1f2a" stroke="#2a3040"/>
+    <text x="383" y="196" fill="#8b94a8">code → Component Sets</text>
+    <rect x="565" y="176" width="150" height="30" rx="15" fill="#1b1f2a" stroke="#2a3040"/>
+    <text x="581" y="196" fill="#8b94a8">zero runtime deps</text>
+  </g>
+</svg>

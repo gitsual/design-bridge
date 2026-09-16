@@ -1,31 +1,77 @@
-# design-bridge
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.svg">
+  <img src="docs/assets/banner-light.svg" alt="design-bridge — your design system, in both directions. Figma to Angular and Vue, through Storybook." width="880">
+</picture>
+
+<p>
+  <em>Figma and your component library stop being two sources of truth.</em><br>
+  <strong>Variables become tokens. Components become Component Sets. Both directions, one repo, zero runtime dependencies.</strong>
+</p>
 
 [![CI](https://github.com/gitsual/design-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/gitsual/design-bridge/actions/workflows/ci.yml)
 [![Lint](https://github.com/gitsual/design-bridge/actions/workflows/lint.yml/badge.svg)](https://github.com/gitsual/design-bridge/actions/workflows/lint.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
 [![Frameworks](https://img.shields.io/badge/adapters-Angular%20%7C%20Vue-informational.svg)](./docs/registry.md)
+[![Runtime deps](https://img.shields.io/badge/runtime%20deps-0-success.svg)](./package.json)
 
-A two-way bridge between Figma and a component library.
+<a href="#-60-second-tour"><strong>60-second tour</strong></a> ·
+<a href="#-the-pipeline-step-by-step"><strong>The 19-step walkthrough</strong></a> ·
+<a href="#-architecture"><strong>Architecture</strong></a> ·
+<a href="./docs/registry.md"><strong>Registry schema</strong></a>
 
-- **Figma → code**: pull Figma Variables and turn them into design tokens —
-  CSS custom properties, SCSS variables, typed TypeScript.
-- **Code → Figma**: describe your components in a registry, generate
-  Storybook stories from it, import those into Figma with
-  [story.to.design](https://story.to.design), then run the included Figma
-  plugin to rebuild proper Component Sets from the flat import.
+</div>
 
-npm workspaces monorepo (`packages/*` only — the examples under `examples/`
-are standalone consumers with their own `package.json`, so CI never installs
-Angular or Storybook to run the test suite): `@design-bridge/tokens`, `@design-bridge/registry`,
-`@design-bridge/generator`, `@design-bridge/figma-plugin`.
+---
 
-## What it looks like
+## 🌉 Why this exists
+
+Every design system starts with the same promise and breaks in the same place.
+The tokens live in Figma. The components live in the repo. Someone renames a
+colour on a Tuesday, and three weeks later a button is the wrong shade of blue
+in production and nobody can say when it happened.
+
+The usual answer is a hand-written mapping file that somebody has to remember to
+update. **design-bridge deletes that file.** Both directions are generated:
+
+| | Direction | What crosses the bridge |
+|---|---|---|
+| 🎨 | **Figma → code** | Figma Variables become W3C DTCG tokens, then CSS custom properties, SCSS variables, and typed TypeScript — aliases preserved, so a palette override cascades everywhere. |
+| 🧩 | **code → Figma** | A registry describes your components; the generator emits Storybook stories; [story.to.design](https://story.to.design) imports them; the bundled Figma plugin rebuilds real **Component Sets** with proper variant properties. |
+
+### ✨ What you get
+
+- **🔁 Two-way, not one-way.** Most tools pull from Figma. This one also pushes back.
+- **🧬 Aliases survive the trip.** `semantic.bg` stays `var(--palette-slate-900)` in CSS — theming is one block of overrides, and no component knows a theme exists.
+- **🪜 Dependency-aware imports.** Card nests Button, so Button lands in Figma *first*. Import them together and Figma gives you detached copies, not instances. The generator computes the layers for you.
+- **🅰️ Angular and 🟩 Vue.** Same registry, two story adapters. Adding a third is one file.
+- **📦 Zero runtime dependencies.** Plain Node ESM. Nothing to audit, nothing to upgrade.
+- **✅ Everything below is real.** Every image in this README comes out of the commands in it — with exactly one labelled exception, and it says so in its own caption.
+
+### ⚡ 60-second tour
+
+```bash
+git clone https://github.com/gitsual/design-bridge && cd design-bridge
+npm ci
+
+npm run demo          # the whole pipeline, end to end, no network, no Figma account
+npm run generate:vue  # regenerate the Vue example's stories from the registry
+npm run storybook     # see them running
+```
+
+`npm run demo` needs no token and no Enterprise plan: it runs the full
+Figma → tokens → build → registry → stories → Figma-organizer chain against a
+fixture and prints every intermediate artifact. 👇 The rest of this README is
+that run, stage by stage, with a capture of each one.
+
+---
+
+## 👀 What it looks like
 
 The same three components, the same registry, the same fifteen tokens — in both
-themes. Every image in this README is produced by the commands in it, with a
-single exception — step 19, the Figma canvas — which is a labelled diagram and
-says so in its own caption.
+themes.
 
 | Light | Dark |
 | --- | --- |
@@ -41,7 +87,7 @@ palette is enough — no component knows a theme exists.
   <img src="docs/assets/storybook-light.png" alt="The generated stories running in Storybook" width="860">
 </picture>
 
-## The pipeline, step by step
+## 🪜 The pipeline, step by step
 
 This is the whole of design-bridge, in order, with a capture of every stage.
 Nothing here is a mock-up except step 19, which says so in its own caption and
@@ -52,14 +98,11 @@ every Storybook capture is the `examples/vue-lib` workspace served by
 `npm run storybook`; every plugin capture is `packages/figma-plugin/src/ui.html`
 rendered with the real generated manifest loaded into it.
 
-To reproduce the whole thing yourself:
-
-```bash
-npm ci
-npm run demo          # steps 1-11, end to end, no network
-npm run generate:vue  # steps 6-7 against the Vue example
-npm run storybook     # steps 12-15
-```
+| Steps | Command |
+|---|---|
+| 1–11 | `npm run demo` |
+| 6–7 against the Vue example | `npm run generate:vue` |
+| 12–15 | `npm run storybook` |
 
 ---
 
@@ -267,7 +310,12 @@ npm test
 
 <img src="docs/assets/tests.svg" alt="npm test output, all suites passing" width="560">
 
-## Architecture
+## 🏗️ Architecture
+
+An npm workspaces monorepo (`packages/*` only — the examples under `examples/`
+are standalone consumers with their own `package.json`, so CI never installs
+Angular or Storybook to run the test suite): `@design-bridge/tokens`,
+`@design-bridge/registry`, `@design-bridge/generator`, `@design-bridge/figma-plugin`.
 
 ```
  Direction A — Figma Variables become code
@@ -312,7 +360,7 @@ npm test
 See [docs/pipeline.md](docs/pipeline.md) for the full walkthrough of both
 directions.
 
-## Direction A: Figma Variables → code
+## 🎨 Direction A: Figma Variables → code
 
 Figma Variables are read through `GET /v1/files/:key/variables/local` and
 converted into [W3C DTCG](https://www.w3.org/community/design-tokens/) token
@@ -331,7 +379,7 @@ instead, because Sass compiles ahead of time and cannot follow a runtime
 > scoped to `file_variables:read`. On any other plan, `pull` will fail with an
 > error from the Figma API.
 
-## Direction B: components → Figma
+## 🧩 Direction B: components → Figma
 
 A JSON [registry](docs/registry.md) declares each component's variants,
 Storybook controls, and which other registry components it nests
@@ -349,7 +397,7 @@ instance. The registry's `dependsOn` graph is layered
 (`packages/registry/src/layers.mjs`) so atoms (layer 0) are always imported
 before anything that nests them.
 
-## Quickstart
+## 🚀 Quickstart
 
 ```bash
 npm install
@@ -390,7 +438,7 @@ Organizer** plugin — see
 it via **Plugins → Development → Import plugin from manifest…** in the Figma
 desktop app.
 
-## Registry example
+## 🗂️ Registry example
 
 ```json
 {
@@ -426,7 +474,7 @@ desktop app.
 Full field-by-field reference, including the `selector` field the Angular
 adapter needs for slotted variants: [docs/registry.md](docs/registry.md).
 
-## Prior art / alternatives
+## 🔎 Prior art / alternatives
 
 design-bridge is narrow on purpose — it only does the two things above. Some
 honest comparisons:
@@ -464,10 +512,20 @@ Angular and Vue (`registry.framework` accepts only those two values). It
 also does not manage anything beyond Figma Variables — component-level Figma
 styles, effects, or text styles are out of scope.
 
-## Contributing
+## 🤝 Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## License
+## 📄 License
 
 [MIT](LICENSE) © 2026 Álvaro González Sanz
+
+---
+
+<div align="center">
+
+<img src="docs/assets/logo.svg" alt="design-bridge" width="48">
+
+<sub>Built because a design system with two sources of truth has none.</sub>
+
+</div>
