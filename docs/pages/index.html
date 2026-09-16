@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>design-bridge — live component libraries</title>
+<meta name="description" content="The same registry and the same design tokens, rendered by two different frameworks. Rebuilt on every push to main.">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #FBFAF8; --fg: #1A1A1A; --muted: #6B6B6B;
+    --line: #E3E0DA; --card: #FFFFFF; --accent: #2F6F6B;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14181F; --fg: #E8ECF2; --muted: #93A0B4;
+      --line: #2A313D; --card: #1A1F28; --accent: #7FC8C2;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181F; --fg: #E8ECF2; --muted: #93A0B4;
+    --line: #2A313D; --card: #1A1F28; --accent: #7FC8C2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.6; padding: clamp(2rem, 6vw, 5rem) 16px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 0 0 .5rem; letter-spacing: -0.02em; }
+  .lede { color: var(--muted); font-size: 1.1rem; margin: 0 0 .4rem; max-width: 60ch; }
+  .sub { color: var(--muted); font-size: .95rem; margin: 0 0 3rem; max-width: 62ch; }
+  .grid { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  a.card {
+    display: block; padding: 1.6rem; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--card); text-decoration: none; color: inherit;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  a.card h2 { margin: 0 0 .3rem; font-size: 1.15rem; }
+  a.card p { margin: 0; color: var(--muted); font-size: .92rem; }
+  a.card .go { display: inline-block; margin-top: .9rem; color: var(--accent); font-weight: 600; font-size: .9rem; }
+  .note {
+    margin-top: 3rem; padding-top: 1.4rem; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: .9rem;
+  }
+  .note a { color: var(--accent); }
+  code { font-family: ui-monospace, SFMono-Regular, monospace; font-size: .88em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>design-bridge</h1>
+  <p class="lede">The same registry and the same design tokens, rendered by two different frameworks.</p>
+  <p class="sub">
+    Each library below is generated from one <code>registry.json</code> and one set of
+    W3C DTCG tokens. Nothing here is written by hand: a push to <code>main</code> regenerates
+    the stories, rebuilds both Storybooks and republishes this page.
+  </p>
+
+  <div class="grid">
+    <a class="card" href="./vue/">
+      <h2>Vue library</h2>
+      <p>Three components, eleven stories, built with the Vue 3 + Vite adapter.</p>
+      <span class="go">Open the Storybook &rarr;</span>
+    </a>
+    <a class="card" href="./angular/">
+      <h2>Angular library</h2>
+      <p>The same three components through the Angular builder, standalone components.</p>
+      <span class="go">Open the Storybook &rarr;</span>
+    </a>
+  </div>
+
+  <p class="note">
+    Both libraries read the identical token file, so a colour changed once in Figma moves
+    both at the same time &mdash; that is the whole point of the bridge.
+    Source, registry schema and the Figma plugin live in the
+    <a href="https://github.com/gitsual/design-bridge">repository</a>.
+  </p>
+</div>
+</body>
+</html>

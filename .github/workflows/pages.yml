@@ -1,0 +1,76 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# The deploy job needs to mint an OIDC token for actions/deploy-pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# A queued deploy should wait for the running one rather than cancel it:
+# cancelling mid-deploy can leave the site half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  STORYBOOK_DISABLE_TELEMETRY: 1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install the monorepo packages
+        run: npm ci
+
+      # The examples import examples/shared/dist/tokens.css, which is generated,
+      # not committed. Both Storybooks fail to build without this step.
+      - name: Build the design tokens
+        run: npm run tokens:build
+
+      # The examples are not npm workspaces: they install on their own so that
+      # each one resolves its own framework version.
+      - name: Build the Vue Storybook
+        working-directory: examples/vue-lib
+        run: |
+          npm ci
+          npm run build-storybook
+
+      - name: Build the Angular Storybook
+        working-directory: examples/angular-lib
+        run: |
+          npm ci
+          npm run build-storybook
+
+      # Both Storybooks emit relative asset paths, so they work unchanged when
+      # served from a subdirectory. No --base handling is needed.
+      - name: Assemble the site
+        run: |
+          mkdir -p site
+          cp docs/pages/index.html site/index.html
+          cp -r examples/vue-lib/storybook-static site/vue
+          cp -r examples/angular-lib/storybook-static site/angular
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
