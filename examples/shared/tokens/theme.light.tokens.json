@@ -1,0 +1,37 @@
+{
+  "palette": {
+    "slate": {
+      "50":  { "$type": "color", "$value": "#f8fafc" },
+      "200": { "$type": "color", "$value": "#e2e8f0" },
+      "600": { "$type": "color", "$value": "#475569" },
+      "900": { "$type": "color", "$value": "#0f172a" }
+    },
+    "blue": {
+      "500": { "$type": "color", "$value": "#3b82f6", "$description": "Brand blue" },
+      "600": { "$type": "color", "$value": "#2563eb" }
+    }
+  },
+  "semantic": {
+    "surface":   { "$type": "color", "$value": "{palette.slate.50}" },
+    "text":      { "$type": "color", "$value": "{palette.slate.900}" },
+    "muted":     { "$type": "color", "$value": "{palette.slate.600}" },
+    "border":    { "$type": "color", "$value": "{palette.slate.200}" },
+    "action":    { "$type": "color", "$value": "{palette.blue.500}" },
+    "action-hover": { "$type": "color", "$value": "{palette.blue.600}" },
+    "on-action": { "$type": "color", "$value": "#ffffff" }
+  },
+  "spacing": {
+    "xs": { "$type": "number", "$value": 4 },
+    "sm": { "$type": "number", "$value": 8 },
+    "md": { "$type": "number", "$value": 16 },
+    "lg": { "$type": "number", "$value": 24 }
+  },
+  "radius": {
+    "sm": { "$type": "number", "$value": 6 },
+    "full": { "$type": "number", "$value": 999 }
+  },
+  "font": {
+    "size": { "sm": { "$type": "number", "$value": 13 }, "md": { "$type": "number", "$value": 15 } },
+    "weight": { "regular": { "$type": "number", "$value": 400 }, "bold": { "$type": "number", "$value": 600 } }
+  }
+}

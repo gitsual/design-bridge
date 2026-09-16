@@ -1,0 +1,7 @@
+{
+  "name": "@design-bridge/figma-plugin",
+  "version": "0.1.0",
+  "description": "Figma plugin that rebuilds Component Sets from a story.to.design import using the design-bridge organizer manifest.",
+  "private": true,
+  "license": "MIT"
+}

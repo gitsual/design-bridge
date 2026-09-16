@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  :root { color-scheme: light dark; font-family: Inter, system-ui, sans-serif; font-size: 12px; }
+  body { margin: 0; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  h1 { font-size: 13px; margin: 0; }
+  p { margin: 0; opacity: .75; line-height: 1.45; }
+  button { font: inherit; padding: 7px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,.4);
+           background: transparent; cursor: pointer; }
+  button.primary { background: #0d99ff; border-color: #0d99ff; color: #fff; font-weight: 600; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 90px; font-family: ui-monospace, monospace;
+             font-size: 11px; border-radius: 6px; border: 1px solid rgba(128,128,128,.4);
+             background: transparent; color: inherit; padding: 6px; resize: vertical; }
+  label { display: flex; gap: 6px; align-items: center; }
+  input[type=text] { flex: 1; font: inherit; padding: 5px 7px; border-radius: 6px;
+                     border: 1px solid rgba(128,128,128,.4); background: transparent; color: inherit; }
+  #log { font-family: ui-monospace, monospace; font-size: 11px; white-space: pre-wrap;
+         max-height: 150px; overflow: auto; border-top: 1px solid rgba(128,128,128,.3); padding-top: 8px; }
+  .row { display: flex; gap: 8px; }
+  .status { font-weight: 600; }
+  .error { color: #d93025; }
+</style>
+</head>
+<body>
+  <h1>Design Bridge Organizer</h1>
+  <p>Select the imported frames (or leave nothing selected to scan the whole page), load the manifest, then organise.</p>
+
+  <div class="row">
+    <button id="load">Load from localhost:6006</button>
+    <button id="use-pasted">Use pasted</button>
+  </div>
+  <textarea id="manifest" placeholder="…or paste figma-organizer.json here"></textarea>
+
+  <label><input type="checkbox" id="pages" checked /> Move each family onto its own page</label>
+  <label>Page prefix <input type="text" id="prefix" value="DS / " /></label>
+
+  <button id="run" class="primary" disabled>Organise selection</button>
+  <div id="log"></div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  let manifest = null;
+
+  function say(text, isError) {
+    const log = $('log');
+    const line = document.createElement('div');
+    if (isError) line.className = 'error';
+    line.textContent = text;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function accept(raw, source) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.items)) throw new Error('no `items` array');
+      manifest = raw;
+      $('run').disabled = false;
+      say(`Manifest loaded from ${source}: ${parsed.items.length} item(s), system "${parsed.system || 'unknown'}".`);
+    } catch (error) {
+      say(`Could not read manifest: ${error.message}`, true);
+    }
+  }
+
+  $('load').onclick = async () => {
+    // Try both hosts: Storybook binds 127.0.0.1 by default, but the plugin
+    // sandbox may resolve localhost differently.
+    const urls = ['http://localhost:6006/figma-organizer.json', 'http://127.0.0.1:6006/figma-organizer.json'];
+    for (const url of urls) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(response.status + ' ' + response.statusText);
+        accept(await response.text(), url);
+        return;
+      } catch (error) {
+        say(`${url} → ${error.message}`, true);
+      }
+    }
+    say('Is Storybook running? Otherwise paste the manifest below.', true);
+  };
+
+  $('use-pasted').onclick = () => accept($('manifest').value, 'pasted text');
+
+  $('run').onclick = () => {
+    $('run').disabled = true;
+    parent.postMessage({ pluginMessage: {
+      type: 'organize',
+      manifest,
+      groupIntoPages: $('pages').checked,
+      pagePrefix: $('prefix').value,
+    } }, '*');
+  };
+
+  onmessage = (event) => {
+    const message = event.data.pluginMessage;
+    if (!message) return;
+    $('run').disabled = false;
+    if (message.type === 'error') return say(`Error: ${message.message}`, true);
+    if (message.type === 'done') {
+      const { matched, setsCreated, unmatched, skipped, log } = message.result;
+      say(`Done — ${matched} component(s), ${setsCreated} set(s), ${unmatched} unmatched, ${skipped} skipped.`);
+      log.forEach((line) => say(line));
+    }
+  };
+</script>
+</body>
+</html>

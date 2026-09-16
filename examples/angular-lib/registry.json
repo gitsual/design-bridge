@@ -1,0 +1,61 @@
+{
+  "name": "acme",
+  "framework": "angular",
+  "components": [
+    {
+      "id": "icon",
+      "name": "Icon",
+      "family": "atoms",
+      "selector": "acme-icon",
+      "import": { "module": "../../../lib/icon.component", "symbol": "IconComponent" },
+      "controls": [
+        { "prop": "name", "kind": "select", "options": ["check", "alert", "arrow"] },
+        { "prop": "size", "kind": "number" }
+      ],
+      "variants": [
+        { "label": "Check", "props": { "name": "check" } },
+        { "label": "Alert", "props": { "name": "alert" } },
+        { "label": "Arrow", "props": { "name": "arrow", "size": 24 } }
+      ]
+    },
+    {
+      "id": "button",
+      "name": "Button",
+      "family": "atoms",
+      "selector": "acme-button",
+      "dependsOn": ["icon"],
+      "import": { "module": "../../../lib/button.component", "symbol": "ButtonComponent" },
+      "controls": [
+        { "prop": "variant", "kind": "select", "options": ["primary", "secondary", "ghost"] },
+        { "prop": "size", "kind": "select", "options": ["sm", "md"] },
+        { "prop": "disabled", "kind": "boolean" },
+        { "prop": "icon", "kind": "select", "options": ["check", "alert", "arrow"] }
+      ],
+      "variants": [
+        { "label": "Primary", "props": { "variant": "primary" }, "slot": "Primary action" },
+        { "label": "Secondary", "props": { "variant": "secondary" }, "slot": "Secondary" },
+        { "label": "Ghost", "props": { "variant": "ghost" }, "slot": "Ghost" },
+        { "label": "With icon", "props": { "variant": "primary", "icon": "arrow" }, "slot": "Continue" },
+        { "label": "Disabled", "props": { "variant": "primary", "disabled": true }, "slot": "Disabled" },
+        { "label": "Small", "props": { "variant": "primary", "size": "sm" }, "slot": "Small" }
+      ]
+    },
+    {
+      "id": "card",
+      "name": "Card",
+      "family": "molecules",
+      "selector": "acme-card",
+      "dependsOn": ["button"],
+      "import": { "module": "../../../lib/card.component", "symbol": "CardComponent" },
+      "controls": [
+        { "prop": "title", "kind": "text" },
+        { "prop": "body", "kind": "text" },
+        { "prop": "action", "kind": "text" }
+      ],
+      "variants": [
+        { "label": "Default", "props": { "title": "Card title", "body": "Supporting copy that explains the card content." } },
+        { "label": "With action", "props": { "title": "Upgrade plan", "body": "Get more storage and priority support.", "action": "Upgrade" } }
+      ]
+    }
+  ]
+}

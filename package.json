@@ -1,0 +1,22 @@
+{
+  "name": "design-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A two-way bridge between Figma and a component library: Figma Variables become design tokens, and components become organised Figma Component Sets via Storybook.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present && npm run test:contract",
+    "test:contract": "npm run tokens:build --silent && node --test 'test/*.test.mjs'",
+    "demo": "node scripts/demo.mjs",
+    "generate:vue": "node packages/generator/src/cli.mjs --registry examples/vue-lib/registry.json --out examples/vue-lib/src/stories/generated",
+    "generate:angular": "node packages/generator/src/cli.mjs --registry examples/angular-lib/registry.json --out examples/angular-lib/src/stories/generated",
+    "tokens:build": "node packages/tokens/src/cli.mjs build --in examples/shared/tokens --out examples/shared/dist --prefix ds"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

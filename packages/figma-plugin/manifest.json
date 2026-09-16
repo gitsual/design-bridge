@@ -1,0 +1,14 @@
+{
+  "name": "Design Bridge Organizer",
+  "id": "design-bridge-organizer",
+  "api": "1.0.0",
+  "main": "src/code.js",
+  "ui": "src/ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["http://localhost:6006", "http://127.0.0.1:6006"],
+    "devAllowedDomains": ["http://localhost:6006", "http://127.0.0.1:6006"],
+    "reasoning": "Reads figma-organizer.json from the local Storybook dev server so imported frames can be matched to their component and variant."
+  }
+}
