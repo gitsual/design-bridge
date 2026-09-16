@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="847" height="330" viewBox="0 0 847 330" role="img" aria-label="Step 7 — generate: stories, the organizer manifest and the import plan">
+  <title>Step 7 — generate: stories, the organizer manifest and the import plan</title>
+  <rect width="847" height="330" rx="10" fill="#11141b" stroke="#2a303d"/>
+  <rect width="847" height="42" rx="10" fill="#1b1f2a"/>
+  <rect y="32" width="847" height="10" fill="#1b1f2a"/>
+  <line x1="0" y1="42" x2="847" y2="42" stroke="#2a303d"/>
+  <circle cx="22" cy="21" r="6" fill="#f7768e" opacity=".85"/><circle cx="41" cy="21" r="6" fill="#e0af68" opacity=".85"/><circle cx="60" cy="21" r="6" fill="#9ece6a" opacity=".85"/>
+  <text x="423.5" y="26" fill="#79839a" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12">Step 7 — generate: stories, the organizer manifest and the import plan</text>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">
+    <text x="20" y="52" fill="#7aa2f7" xml:space="preserve">$ npx design-bridge-generate --registry registry.json --out src/stories/generated</text>
+    <text x="20" y="92" fill="#d6dae4" xml:space="preserve">Generated 5 file(s) into examples/vue-lib/src/stories/generated</text>
+    <text x="20" y="112" fill="#d6dae4" xml:space="preserve">  3 components, 11 stories</text>
+    <text x="20" y="132" fill="#d6dae4" xml:space="preserve">  import plan: L0 (1) -&gt; L1 (1) -&gt; L2 (1)</text>
+    <text x="20" y="172" fill="#7aa2f7" xml:space="preserve">$ eza src/stories/generated/</text>
+    <text x="20" y="212" fill="#d6dae4" xml:space="preserve">  atoms-button.stories.ts</text>
+    <text x="20" y="232" fill="#d6dae4" xml:space="preserve">  atoms-icon.stories.ts</text>
+    <text x="20" y="252" fill="#d6dae4" xml:space="preserve">  figma-organizer.json</text>
+    <text x="20" y="272" fill="#bb9af7" xml:space="preserve">  manifest.json</text>
+    <text x="20" y="292" fill="#d6dae4" xml:space="preserve">  molecules-card.stories.ts</text>
+  </g>
+</svg>

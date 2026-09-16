@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="838" height="630" viewBox="0 0 838 630" role="img" aria-label="Step 11 — the organizer manifest: the contract the Figma plugin reads">
+  <title>Step 11 — the organizer manifest: the contract the Figma plugin reads</title>
+  <rect width="838" height="630" rx="10" fill="#11141b" stroke="#2a303d"/>
+  <rect width="838" height="42" rx="10" fill="#1b1f2a"/>
+  <rect y="32" width="838" height="10" fill="#1b1f2a"/>
+  <line x1="0" y1="42" x2="838" y2="42" stroke="#2a303d"/>
+  <circle cx="22" cy="21" r="6" fill="#f7768e" opacity=".85"/><circle cx="41" cy="21" r="6" fill="#e0af68" opacity=".85"/><circle cx="60" cy="21" r="6" fill="#9ece6a" opacity=".85"/>
+  <text x="419" y="26" fill="#79839a" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12">Step 11 — the organizer manifest: the contract the Figma plugin reads</text>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">
+    <text x="20" y="52" fill="#7aa2f7" xml:space="preserve">$ head -26 src/stories/generated/figma-organizer.json</text>
+    <text x="20" y="92" fill="#d6dae4" xml:space="preserve">{</text>
+    <text x="20" y="112" fill="#d6dae4" xml:space="preserve">  &quot;generatedAt&quot;: &quot;2026-09-16T13:52:20.405Z&quot;,</text>
+    <text x="20" y="132" fill="#d6dae4" xml:space="preserve">  &quot;system&quot;: &quot;acme&quot;,</text>
+    <text x="20" y="152" fill="#d6dae4" xml:space="preserve">  &quot;framework&quot;: &quot;vue&quot;,</text>
+    <text x="20" y="172" fill="#d6dae4" xml:space="preserve">  &quot;itemCount&quot;: 11,</text>
+    <text x="20" y="192" fill="#d6dae4" xml:space="preserve">  &quot;items&quot;: [</text>
+    <text x="20" y="212" fill="#d6dae4" xml:space="preserve">    {</text>
+    <text x="20" y="232" fill="#d6dae4" xml:space="preserve">      &quot;name&quot;: &quot;acme/atoms/Icon/Check&quot;,</text>
+    <text x="20" y="252" fill="#d6dae4" xml:space="preserve">      &quot;componentId&quot;: &quot;icon&quot;,</text>
+    <text x="20" y="272" fill="#d6dae4" xml:space="preserve">      &quot;family&quot;: &quot;atoms&quot;,</text>
+    <text x="20" y="292" fill="#d6dae4" xml:space="preserve">      &quot;component&quot;: &quot;Icon&quot;,</text>
+    <text x="20" y="312" fill="#d6dae4" xml:space="preserve">      &quot;variantLabel&quot;: &quot;Check&quot;,</text>
+    <text x="20" y="332" fill="#d6dae4" xml:space="preserve">      &quot;variantProps&quot;: {</text>
+    <text x="20" y="352" fill="#d6dae4" xml:space="preserve">        &quot;name&quot;: &quot;check&quot;</text>
+    <text x="20" y="372" fill="#d6dae4" xml:space="preserve">      },</text>
+    <text x="20" y="392" fill="#d6dae4" xml:space="preserve">      &quot;layer&quot;: 0</text>
+    <text x="20" y="412" fill="#d6dae4" xml:space="preserve">    },</text>
+    <text x="20" y="432" fill="#d6dae4" xml:space="preserve">    {</text>
+    <text x="20" y="452" fill="#d6dae4" xml:space="preserve">      &quot;name&quot;: &quot;acme/atoms/Icon/Alert&quot;,</text>
+    <text x="20" y="472" fill="#d6dae4" xml:space="preserve">      &quot;componentId&quot;: &quot;icon&quot;,</text>
+    <text x="20" y="492" fill="#d6dae4" xml:space="preserve">      &quot;family&quot;: &quot;atoms&quot;,</text>
+    <text x="20" y="512" fill="#d6dae4" xml:space="preserve">      &quot;component&quot;: &quot;Icon&quot;,</text>
+    <text x="20" y="532" fill="#d6dae4" xml:space="preserve">      &quot;variantLabel&quot;: &quot;Alert&quot;,</text>
+    <text x="20" y="552" fill="#d6dae4" xml:space="preserve">      &quot;variantProps&quot;: {</text>
+    <text x="20" y="572" fill="#d6dae4" xml:space="preserve">        &quot;name&quot;: &quot;alert&quot;</text>
+    <text x="20" y="592" fill="#d6dae4" xml:space="preserve">      },</text>
+  </g>
+</svg>

@@ -63,6 +63,10 @@ And the whole thing is covered:
 
 <img src="docs/assets/tests.svg" alt="npm test output, 66 tests passing" width="560">
 
+**[→ Every stage of the pipeline, captured in order (docs/demo.md)](docs/demo.md)**
+— nineteen numbered steps from the raw Figma API response to the Component Sets
+on the other side, each with the real output of the command that produced it.
+
 
 ## Architecture
 

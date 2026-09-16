@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="721" height="310" viewBox="0 0 721 310" role="img" aria-label="Step 10 — the import plan: Card nests Button nests Icon">
+  <title>Step 10 — the import plan: Card nests Button nests Icon</title>
+  <rect width="721" height="310" rx="10" fill="#11141b" stroke="#2a303d"/>
+  <rect width="721" height="42" rx="10" fill="#1b1f2a"/>
+  <rect y="32" width="721" height="10" fill="#1b1f2a"/>
+  <line x1="0" y1="42" x2="721" y2="42" stroke="#2a303d"/>
+  <circle cx="22" cy="21" r="6" fill="#f7768e" opacity=".85"/><circle cx="41" cy="21" r="6" fill="#e0af68" opacity=".85"/><circle cx="60" cy="21" r="6" fill="#9ece6a" opacity=".85"/>
+  <text x="360.5" y="26" fill="#79839a" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12">Step 10 — the import plan: Card nests Button nests Icon</text>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">
+    <text x="20" y="52" fill="#7aa2f7" xml:space="preserve">$ jq &quot;.components[] | {id, layer, dependsOn, usedBy}&quot; manifest.json</text>
+    <text x="20" y="92" fill="#d6dae4" xml:space="preserve">  id        layer  dependsOn        usedBy</text>
+    <text x="20" y="112" fill="#bb9af7" xml:space="preserve">  --------  -----  ---------------  ------</text>
+    <text x="20" y="132" fill="#d6dae4" xml:space="preserve">  icon      L0     -                1</text>
+    <text x="20" y="152" fill="#d6dae4" xml:space="preserve">  button    L1     icon             1</text>
+    <text x="20" y="172" fill="#d6dae4" xml:space="preserve">  card      L2     button           0</text>
+    <text x="20" y="212" fill="#d6dae4" xml:space="preserve">  import plan (run these batches IN THIS ORDER):</text>
+    <text x="20" y="232" fill="#d6dae4" xml:space="preserve">    Atoms     icon</text>
+    <text x="20" y="252" fill="#d6dae4" xml:space="preserve">    Layer 1   button</text>
+    <text x="20" y="272" fill="#d6dae4" xml:space="preserve">    Layer 2   card</text>
+  </g>
+</svg>

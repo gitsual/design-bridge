@@ -45,11 +45,21 @@ test('every local image referenced in the docs exists', () => {
   assert.deepEqual(missing, [], `missing images:\n${missing.join('\n')}`);
 });
 
+/** Every file under a directory, recursively, as repo-relative posix paths. */
+function assetFiles(dir) {
+  return fs.readdirSync(path.join(root, dir), { withFileTypes: true })
+    .flatMap((entry) => (entry.isDirectory()
+      ? assetFiles(`${dir}/${entry.name}`)
+      : [`${dir}/${entry.name}`]));
+}
+
 test('every asset in docs/assets is actually referenced', () => {
-  // An orphan asset is dead weight in a repo people clone.
+  // An orphan asset is dead weight in a repo people clone. This walks
+  // subdirectories too: docs/assets/demo/ holds the step-by-step captures, and
+  // a non-recursive check would only ever see the directory name and pass.
   const sources = markdownFiles().map((file) => fs.readFileSync(path.join(root, file), 'utf8')).join('\n');
-  const orphans = fs.readdirSync(path.join(root, 'docs/assets'))
-    .filter((name) => !sources.includes(name));
+  const orphans = assetFiles('docs/assets')
+    .filter((file) => !sources.includes(file.replace(/^docs\//, '')));
   assert.deepEqual(orphans, [], `unreferenced assets:\n${orphans.join('\n')}`);
 });
 

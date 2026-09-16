@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="704" height="190" viewBox="0 0 704 190" role="img" aria-label="Step 2 — pull: one DTCG file per collection and mode">
+  <title>Step 2 — pull: one DTCG file per collection and mode</title>
+  <rect width="704" height="190" rx="10" fill="#11141b" stroke="#2a303d"/>
+  <rect width="704" height="42" rx="10" fill="#1b1f2a"/>
+  <rect y="32" width="704" height="10" fill="#1b1f2a"/>
+  <line x1="0" y1="42" x2="704" y2="42" stroke="#2a303d"/>
+  <circle cx="22" cy="21" r="6" fill="#f7768e" opacity=".85"/><circle cx="41" cy="21" r="6" fill="#e0af68" opacity=".85"/><circle cx="60" cy="21" r="6" fill="#9ece6a" opacity=".85"/>
+  <text x="352" y="26" fill="#79839a" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12">Step 2 — pull: one DTCG file per collection and mode</text>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">
+    <text x="20" y="52" fill="#7aa2f7" xml:space="preserve">$ export FIGMA_TOKEN=figd_...        # never a CLI flag: see docs/security.md</text>
+    <text x="20" y="72" fill="#7aa2f7" xml:space="preserve">$ npx design-bridge-tokens pull --file $FILE_KEY --out tokens/</text>
+    <text x="20" y="112" fill="#d6dae4" xml:space="preserve">  wrote tokens/theme.light.tokens.json</text>
+    <text x="20" y="132" fill="#d6dae4" xml:space="preserve">  wrote tokens/theme.dark.tokens.json</text>
+    <text x="20" y="152" fill="#d6dae4" xml:space="preserve">Pulled 2 token file(s) from Figma file $FILE_KEY.</text>
+  </g>
+</svg>

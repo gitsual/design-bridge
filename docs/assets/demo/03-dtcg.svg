@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="771" height="710" viewBox="0 0 771 710" role="img" aria-label="Step 3 — W3C DTCG tokens, aliases preserved as references">
+  <title>Step 3 — W3C DTCG tokens, aliases preserved as references</title>
+  <rect width="771" height="710" rx="10" fill="#11141b" stroke="#2a303d"/>
+  <rect width="771" height="42" rx="10" fill="#1b1f2a"/>
+  <rect y="32" width="771" height="10" fill="#1b1f2a"/>
+  <line x1="0" y1="42" x2="771" y2="42" stroke="#2a303d"/>
+  <circle cx="22" cy="21" r="6" fill="#f7768e" opacity=".85"/><circle cx="41" cy="21" r="6" fill="#e0af68" opacity=".85"/><circle cx="60" cy="21" r="6" fill="#9ece6a" opacity=".85"/>
+  <text x="385.5" y="26" fill="#79839a" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12">Step 3 — W3C DTCG tokens, aliases preserved as references</text>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">
+    <text x="20" y="52" fill="#7aa2f7" xml:space="preserve">$ head -28 tokens/theme.light.tokens.json</text>
+    <text x="20" y="92" fill="#d6dae4" xml:space="preserve">{</text>
+    <text x="20" y="112" fill="#d6dae4" xml:space="preserve">  &quot;palette&quot;: {</text>
+    <text x="20" y="132" fill="#d6dae4" xml:space="preserve">    &quot;slate&quot;: {</text>
+    <text x="20" y="152" fill="#d6dae4" xml:space="preserve">      &quot;50&quot;:  { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;#f8fafc&quot; },</text>
+    <text x="20" y="172" fill="#d6dae4" xml:space="preserve">      &quot;200&quot;: { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;#e2e8f0&quot; },</text>
+    <text x="20" y="192" fill="#d6dae4" xml:space="preserve">      &quot;600&quot;: { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;#475569&quot; },</text>
+    <text x="20" y="212" fill="#d6dae4" xml:space="preserve">      &quot;900&quot;: { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;#0f172a&quot; }</text>
+    <text x="20" y="232" fill="#d6dae4" xml:space="preserve">    },</text>
+    <text x="20" y="252" fill="#d6dae4" xml:space="preserve">    &quot;blue&quot;: {</text>
+    <text x="20" y="272" fill="#d6dae4" xml:space="preserve">      &quot;500&quot;: { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;#3b82f6&quot;, &quot;$description&quot;: &quot;Brand blue&quot; },</text>
+    <text x="20" y="292" fill="#d6dae4" xml:space="preserve">      &quot;600&quot;: { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;#2563eb&quot; }</text>
+    <text x="20" y="312" fill="#d6dae4" xml:space="preserve">    }</text>
+    <text x="20" y="332" fill="#d6dae4" xml:space="preserve">  },</text>
+    <text x="20" y="352" fill="#d6dae4" xml:space="preserve">  &quot;semantic&quot;: {</text>
+    <text x="20" y="372" fill="#d6dae4" xml:space="preserve">    &quot;surface&quot;:   { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;{palette.slate.50}&quot; },</text>
+    <text x="20" y="392" fill="#d6dae4" xml:space="preserve">    &quot;text&quot;:      { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;{palette.slate.900}&quot; },</text>
+    <text x="20" y="412" fill="#d6dae4" xml:space="preserve">    &quot;muted&quot;:     { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;{palette.slate.600}&quot; },</text>
+    <text x="20" y="432" fill="#d6dae4" xml:space="preserve">    &quot;border&quot;:    { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;{palette.slate.200}&quot; },</text>
+    <text x="20" y="452" fill="#d6dae4" xml:space="preserve">    &quot;action&quot;:    { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;{palette.blue.500}&quot; },</text>
+    <text x="20" y="472" fill="#d6dae4" xml:space="preserve">    &quot;action-hover&quot;: { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;{palette.blue.600}&quot; },</text>
+    <text x="20" y="492" fill="#d6dae4" xml:space="preserve">    &quot;on-action&quot;: { &quot;$type&quot;: &quot;color&quot;, &quot;$value&quot;: &quot;#ffffff&quot; }</text>
+    <text x="20" y="512" fill="#d6dae4" xml:space="preserve">  },</text>
+    <text x="20" y="532" fill="#d6dae4" xml:space="preserve">  &quot;spacing&quot;: {</text>
+    <text x="20" y="552" fill="#d6dae4" xml:space="preserve">    &quot;xs&quot;: { &quot;$type&quot;: &quot;number&quot;, &quot;$value&quot;: 4 },</text>
+    <text x="20" y="572" fill="#d6dae4" xml:space="preserve">    &quot;sm&quot;: { &quot;$type&quot;: &quot;number&quot;, &quot;$value&quot;: 8 },</text>
+    <text x="20" y="592" fill="#d6dae4" xml:space="preserve">    &quot;md&quot;: { &quot;$type&quot;: &quot;number&quot;, &quot;$value&quot;: 16 },</text>
+    <text x="20" y="612" fill="#d6dae4" xml:space="preserve">    &quot;lg&quot;: { &quot;$type&quot;: &quot;number&quot;, &quot;$value&quot;: 24 }</text>
+    <text x="20" y="632" fill="#d6dae4" xml:space="preserve">  },</text>
+    <text x="20" y="672" fill="#79839a" xml:space="preserve"># Note: semantic.action kept the reference, it was not flattened.</text>
+  </g>
+</svg>

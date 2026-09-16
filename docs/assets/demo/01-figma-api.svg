@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="805" height="830" viewBox="0 0 805 830" role="img" aria-label="Step 1 — what Figma returns: modes, and aliases as VARIABLE_ALIAS">
+  <title>Step 1 — what Figma returns: modes, and aliases as VARIABLE_ALIAS</title>
+  <rect width="805" height="830" rx="10" fill="#11141b" stroke="#2a303d"/>
+  <rect width="805" height="42" rx="10" fill="#1b1f2a"/>
+  <rect y="32" width="805" height="10" fill="#1b1f2a"/>
+  <line x1="0" y1="42" x2="805" y2="42" stroke="#2a303d"/>
+  <circle cx="22" cy="21" r="6" fill="#f7768e" opacity=".85"/><circle cx="41" cy="21" r="6" fill="#e0af68" opacity=".85"/><circle cx="60" cy="21" r="6" fill="#9ece6a" opacity=".85"/>
+  <text x="402.5" y="26" fill="#79839a" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12">Step 1 — what Figma returns: modes, and aliases as VARIABLE_ALIAS</text>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13">
+    <text x="20" y="52" fill="#7aa2f7" xml:space="preserve">$ curl -H &quot;X-Figma-Token: \$FIGMA_TOKEN&quot; \</text>
+    <text x="20" y="72" fill="#d6dae4" xml:space="preserve">    https://api.figma.com/v1/files/$FILE_KEY/variables/local</text>
+    <text x="20" y="112" fill="#d6dae4" xml:space="preserve">{</text>
+    <text x="20" y="132" fill="#d6dae4" xml:space="preserve">  &quot;meta&quot;: {</text>
+    <text x="20" y="152" fill="#d6dae4" xml:space="preserve">    &quot;variableCollections&quot;: {</text>
+    <text x="20" y="172" fill="#d6dae4" xml:space="preserve">      &quot;VariableCollectionId:1:2&quot;: {</text>
+    <text x="20" y="192" fill="#d6dae4" xml:space="preserve">        &quot;id&quot;: &quot;VariableCollectionId:1:2&quot;,</text>
+    <text x="20" y="212" fill="#d6dae4" xml:space="preserve">        &quot;name&quot;: &quot;Theme&quot;,</text>
+    <text x="20" y="232" fill="#d6dae4" xml:space="preserve">        &quot;modes&quot;: [</text>
+    <text x="20" y="252" fill="#d6dae4" xml:space="preserve">          {</text>
+    <text x="20" y="272" fill="#d6dae4" xml:space="preserve">            &quot;modeId&quot;: &quot;1:0&quot;,</text>
+    <text x="20" y="292" fill="#d6dae4" xml:space="preserve">            &quot;name&quot;: &quot;light&quot;</text>
+    <text x="20" y="312" fill="#d6dae4" xml:space="preserve">          },</text>
+    <text x="20" y="332" fill="#d6dae4" xml:space="preserve">          {</text>
+    <text x="20" y="352" fill="#d6dae4" xml:space="preserve">            &quot;modeId&quot;: &quot;1:1&quot;,</text>
+    <text x="20" y="372" fill="#d6dae4" xml:space="preserve">            &quot;name&quot;: &quot;dark&quot;</text>
+    <text x="20" y="392" fill="#d6dae4" xml:space="preserve">          }</text>
+    <text x="20" y="412" fill="#d6dae4" xml:space="preserve">        ]</text>
+    <text x="20" y="432" fill="#d6dae4" xml:space="preserve">      }</text>
+    <text x="20" y="452" fill="#d6dae4" xml:space="preserve">    },</text>
+    <text x="20" y="472" fill="#d6dae4" xml:space="preserve">    &quot;variables&quot;: {</text>
+    <text x="20" y="492" fill="#d6dae4" xml:space="preserve">      &quot;VariableID:1:3&quot;: {</text>
+    <text x="20" y="512" fill="#d6dae4" xml:space="preserve">        &quot;id&quot;: &quot;VariableID:1:3&quot;,</text>
+    <text x="20" y="532" fill="#d6dae4" xml:space="preserve">        &quot;name&quot;: &quot;palette/blue/500&quot;,</text>
+    <text x="20" y="552" fill="#d6dae4" xml:space="preserve">        &quot;resolvedType&quot;: &quot;COLOR&quot;,</text>
+    <text x="20" y="572" fill="#d6dae4" xml:space="preserve">        &quot;variableCollectionId&quot;: &quot;VariableCollectionId:1:2&quot;,</text>
+    <text x="20" y="592" fill="#d6dae4" xml:space="preserve">        &quot;description&quot;: &quot;Brand blue&quot;,</text>
+    <text x="20" y="612" fill="#d6dae4" xml:space="preserve">        &quot;valuesByMode&quot;: {</text>
+    <text x="20" y="632" fill="#d6dae4" xml:space="preserve">          &quot;1:0&quot;: {</text>
+    <text x="20" y="652" fill="#d6dae4" xml:space="preserve">            &quot;r&quot;: 0.231,</text>
+    <text x="20" y="672" fill="#d6dae4" xml:space="preserve">            &quot;g&quot;: 0.51,</text>
+    <text x="20" y="692" fill="#d6dae4" xml:space="preserve">            &quot;b&quot;: 0.965,</text>
+    <text x="20" y="712" fill="#d6dae4" xml:space="preserve">            &quot;a&quot;: 1</text>
+    <text x="20" y="732" fill="#d6dae4" xml:space="preserve">          },</text>
+    <text x="20" y="752" fill="#d6dae4" xml:space="preserve">          &quot;1:1&quot;: {</text>
+    <text x="20" y="772" fill="#d6dae4" xml:space="preserve">            &quot;r&quot;: 0.376,</text>
+    <text x="20" y="792" fill="#d6dae4" xml:space="preserve">  ...</text>
+  </g>
+</svg>
