@@ -20,6 +20,13 @@ inside Figma:
 Re-running is safe: a `COMPONENT_SET` that is already organised is left
 alone, not duplicated.
 
+It also publishes **styles** back into Figma. Given a DTCG token file — the
+same one the CSS is built from — every `color` and `gradient` token becomes a
+Paint style, every `effect` token an Effect style, and every `typography`
+token a Text style, named after its token path (`text/body/large`). A style
+that already carries that name is updated in place, so a round trip lands
+where it started instead of duplicating the library.
+
 ## Install (development)
 
 Figma plugins are not published to a marketplace during development — they
@@ -55,6 +62,25 @@ are loaded locally from `manifest.json`:
    is skipped when it can't be converted to a `COMPONENT` — e.g. it is
    already a `COMPONENT_SET`, or Figma's `createComponentFromNode` rejects
    it).
+
+## Publishing styles
+
+1. Pull and/or author your tokens as usual (`design-bridge-tokens pull` writes
+   `fill.default.tokens.json`, `text.default.tokens.json`,
+   `effect.default.tokens.json`, … alongside the variable collections).
+2. Run the plugin in the target library file.
+3. Paste one token file into the **Publish styles** textarea and click
+   **Publish styles**.
+4. The log reports how many styles were created, how many existing ones were
+   updated, and which tokens were skipped.
+
+Two notes on what is *not* written back:
+
+- A `grid` token is skipped. Figma layout grids belong to a frame, and writing
+  one back would mean guessing which frame a component implements.
+- A `typography` token needs its font available in the file: the plugin calls
+  `figma.loadFontAsync` first, so a missing face fails loudly for that token
+  rather than silently substituting another one.
 
 ## Network access
 

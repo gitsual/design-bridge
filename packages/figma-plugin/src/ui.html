@@ -22,6 +22,8 @@
   .row { display: flex; gap: 8px; }
   .status { font-weight: 600; }
   .error { color: #d93025; }
+  hr { border: 0; border-top: 1px solid rgba(128,128,128,.3); margin: 2px 0; }
+  h2 { font-size: 12px; margin: 0; }
 </style>
 </head>
 <body>
@@ -38,6 +40,16 @@
   <label>Page prefix <input type="text" id="prefix" value="DS / " /></label>
 
   <button id="run" class="primary" disabled>Organise selection</button>
+
+  <hr />
+
+  <h2>Publish styles</h2>
+  <p>Paste a DTCG token file — the same one the CSS is built from. Every colour,
+     gradient, effect and typography token becomes a Figma Paint, Effect or Text
+     style. A style that already carries the name is updated, not duplicated.</p>
+  <textarea id="tokens" placeholder="…paste text.default.tokens.json, effect.default.tokens.json, …"></textarea>
+  <button id="publish" class="primary">Publish styles</button>
+
   <div id="log"></div>
 
 <script>
@@ -94,15 +106,35 @@
     } }, '*');
   };
 
+  $('publish').onclick = () => {
+    const raw = $('tokens').value.trim();
+    if (!raw) { say('Nothing to publish: paste a token file first.', true); return; }
+    try {
+      JSON.parse(raw);
+    } catch (error) {
+      say(`That is not valid JSON: ${error.message}`, true);
+      return;
+    }
+    $('publish').disabled = true;
+    parent.postMessage({ pluginMessage: { type: 'styles', tokens: raw } }, '*');
+  };
+
   onmessage = (event) => {
     const message = event.data.pluginMessage;
     if (!message) return;
     $('run').disabled = false;
+    $('publish').disabled = false;
     if (message.type === 'error') return say(`Error: ${message.message}`, true);
     if (message.type === 'done') {
-      const { matched, setsCreated, unmatched, skipped, log } = message.result;
-      say(`Done — ${matched} component(s), ${setsCreated} set(s), ${unmatched} unmatched, ${skipped} skipped.`);
-      log.forEach((line) => say(line));
+      const result = message.result;
+      if (message.kind === 'styles') {
+        const { created, updated, skipped } = result;
+        say(`Done — ${created} style(s) created, ${updated} updated, ${skipped.length} skipped.`);
+      } else {
+        const { matched, setsCreated, unmatched, skipped } = result;
+        say(`Done — ${matched} component(s), ${setsCreated} set(s), ${unmatched} unmatched, ${skipped} skipped.`);
+      }
+      result.log.forEach((line) => say(line));
     }
   };
 </script>

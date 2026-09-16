@@ -14,8 +14,193 @@
  *   4. name every variant `prop=value, ...` so Figma exposes real properties
  *   5. move each Component Set onto a page named after its family
  *
- * Re-running is safe: already-organised components are skipped, not duplicated.
+ * It also publishes the other half of a design system back to Figma. Variables
+ * already cross as Variables; a shadow, a type ramp and a brand fill are Styles,
+ * and until this plugin could write them the bridge carried values one way and
+ * left compositions behind. `applyStyles` takes the same DTCG token files the
+ * CSS is built from and creates or updates the matching Paint, Text and Effect
+ * styles.
+ *
+ * Re-running either half is safe: already-organised components are skipped and
+ * an existing style is updated in place rather than duplicated.
  */
+
+/* ------------------------------------------------------------------ styles */
+
+/**
+ * `#rrggbb` or `#rrggbbaa` -> Figma's `{ r, g, b, a }` in the 0..1 range.
+ *
+ * The tokens package has this conversion in the other direction, and sharing it
+ * would be better, but a Figma plugin runs as one file in a sandbox with no
+ * module resolution: importing across the workspace is not available here. The
+ * duplication is deliberate, and it is eleven lines rather than a build step.
+ */
+function hexToRgba(hex) {
+  const clean = String(hex).trim().replace(/^#/, '');
+  const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean;
+  const channel = (offset) => parseInt(full.slice(offset, offset + 2), 16) / 255;
+  return {
+    r: channel(0),
+    g: channel(2),
+    b: channel(4),
+    a: full.length >= 8 ? channel(6) : 1,
+  };
+}
+
+/**
+ * A numeric font weight -> the style name Figma files the face under.
+ *
+ * Figma has no weight axis on a style: it has a named face, and asking for the
+ * wrong name fails the font load rather than falling back. Anything unmapped
+ * keeps its number so the error names it.
+ */
+const WEIGHT_NAMES = {
+  100: 'Thin', 200: 'ExtraLight', 300: 'Light', 400: 'Regular',
+  500: 'Medium', 600: 'SemiBold', 700: 'Bold', 800: 'ExtraBold', 900: 'Black',
+};
+
+/** Depth-first walk yielding `[path, token]` for every DTCG token in a tree. */
+function walkTokens(tree, path) {
+  const out = [];
+  for (const key of Object.keys(tree)) {
+    if (key.charAt(0) === '$') continue;
+    const node = tree[key];
+    if (!node || typeof node !== 'object') continue;
+    const next = (path || []).concat(key);
+    if ('$value' in node) out.push([next, node]);
+    else out.push.apply(out, walkTokens(node, next));
+  }
+  return out;
+}
+
+/**
+ * The Figma style name a token path becomes.
+ *
+ * Figma namespaces with slashes exactly as the importer reads them, so a token
+ * pulled from `text/body/large` is written back to `text/body/large`. A round
+ * trip has to land where it started or it is not a bridge.
+ */
+function styleName(path) {
+  return path.join('/');
+}
+
+/** Find an existing style by name so a second run updates instead of doubling. */
+function findByName(styles, name) {
+  for (const style of styles) if (style.name === name) return style;
+  return null;
+}
+
+function tokenEffects(value) {
+  const effects = [];
+  const shadows = value.shadows || (Array.isArray(value) ? value : []);
+  for (const shadow of shadows) {
+    effects.push({
+      type: shadow.inset ? 'INNER_SHADOW' : 'DROP_SHADOW',
+      color: hexToRgba(shadow.color),
+      offset: { x: shadow.offsetX || 0, y: shadow.offsetY || 0 },
+      radius: shadow.blur || 0,
+      spread: shadow.spread || 0,
+      visible: true,
+      blendMode: 'NORMAL',
+    });
+  }
+  if (value.blur !== undefined) {
+    effects.push({ type: 'LAYER_BLUR', radius: value.blur, visible: true });
+  }
+  if (value.backdropBlur !== undefined) {
+    effects.push({ type: 'BACKGROUND_BLUR', radius: value.backdropBlur, visible: true });
+  }
+  return effects;
+}
+
+/**
+ * Create or update Figma styles from a DTCG token tree.
+ *
+ * Tokens that have no Style to be are skipped rather than approximated: a
+ * `grid` token is a set of numbers a component implements, and writing it back
+ * as a layout grid would guess at the frame it applies to.
+ */
+async function applyStyles(tree) {
+  const paints = await figma.getLocalPaintStylesAsync();
+  const texts = await figma.getLocalTextStylesAsync();
+  const effects = await figma.getLocalEffectStylesAsync();
+  const log = [];
+  let created = 0;
+  let updated = 0;
+  const skipped = [];
+
+  for (const entry of walkTokens(tree, [])) {
+    const path = entry[0];
+    const token = entry[1];
+    const name = styleName(path);
+    const type = token.$type;
+    const value = token.$value;
+
+    try {
+      if (type === 'color') {
+        let style = findByName(paints, name);
+        if (style) updated += 1;
+        else { style = figma.createPaintStyle(); style.name = name; paints.push(style); created += 1; }
+        const rgba = hexToRgba(value);
+        style.paints = [{ type: 'SOLID', color: { r: rgba.r, g: rgba.g, b: rgba.b }, opacity: rgba.a }];
+      } else if (type === 'gradient') {
+        let style = findByName(paints, name);
+        if (style) updated += 1;
+        else { style = figma.createPaintStyle(); style.name = name; paints.push(style); created += 1; }
+        // Figma places a gradient with a transform rather than an angle. This
+        // is the identity transform rotated by the token's angle about the
+        // centre, which is what `linear-gradient(Ndeg, ...)` describes.
+        const radians = ((value.angle || 180) - 180) * (Math.PI / 180);
+        const cos = Math.cos(radians);
+        const sin = Math.sin(radians);
+        style.paints = [{
+          type: 'GRADIENT_LINEAR',
+          gradientTransform: [[cos, sin, 0.5 - (cos + sin) / 2], [-sin, cos, 0.5 - (cos - sin) / 2]],
+          gradientStops: (value.stops || []).map((stop) => ({
+            position: stop.position,
+            color: hexToRgba(stop.color),
+          })),
+        }];
+      } else if (type === 'effect') {
+        let style = findByName(effects, name);
+        if (style) updated += 1;
+        else { style = figma.createEffectStyle(); style.name = name; effects.push(style); created += 1; }
+        style.effects = tokenEffects(value);
+      } else if (type === 'typography') {
+        const family = value.fontFamily;
+        const weight = WEIGHT_NAMES[value.fontWeight] || String(value.fontWeight || 'Regular');
+        // The font has to be loaded before any property of a text style can be
+        // set, and a missing face fails here rather than silently substituting.
+        await figma.loadFontAsync({ family: family, style: weight });
+        let style = findByName(texts, name);
+        if (style) updated += 1;
+        else { style = figma.createTextStyle(); style.name = name; texts.push(style); created += 1; }
+        style.fontName = { family: family, style: weight };
+        if (value.fontSize !== undefined) style.fontSize = value.fontSize;
+        if (value.letterSpacing !== undefined) {
+          style.letterSpacing = { unit: 'PIXELS', value: value.letterSpacing };
+        }
+        if (value.lineHeight === 'normal' || value.lineHeight === undefined) {
+          style.lineHeight = { unit: 'AUTO' };
+        } else if (value.lineHeight < 4) {
+          // A ratio, not a length: 1.5 means 150% of the font size.
+          style.lineHeight = { unit: 'PERCENT', value: value.lineHeight * 100 };
+        } else {
+          style.lineHeight = { unit: 'PIXELS', value: value.lineHeight };
+        }
+      } else {
+        skipped.push(name + ' (' + type + ')');
+        continue;
+      }
+      log.push('+ ' + name + ' (' + type + ')');
+    } catch (error) {
+      log.push('! ' + name + ': ' + error.message);
+      skipped.push(name + ' (' + error.message + ')');
+    }
+  }
+
+  return { log: log, created: created, updated: updated, skipped: skipped };
+}
 
 /** Figma variant property names cannot contain `=` or `,`. */
 function sanitisePropertyName(name) {
@@ -158,6 +343,16 @@ async function organize(options) {
 figma.showUI(__html__, { width: 420, height: 520 });
 
 figma.ui.onmessage = async (message) => {
+  if (message.type === 'styles') {
+    try {
+      const tree = JSON.parse(message.tokens);
+      const result = await applyStyles(tree);
+      figma.ui.postMessage({ type: 'done', kind: 'styles', result });
+    } catch (error) {
+      figma.ui.postMessage({ type: 'error', message: error.message });
+    }
+    return;
+  }
   if (message.type !== 'organize') return;
   try {
     const manifest = JSON.parse(message.manifest);
@@ -169,7 +364,7 @@ figma.ui.onmessage = async (message) => {
       groupIntoPages: message.groupIntoPages,
       pagePrefix: message.pagePrefix,
     });
-    figma.ui.postMessage({ type: 'done', result });
+    figma.ui.postMessage({ type: 'done', kind: 'organize', result });
   } catch (error) {
     figma.ui.postMessage({ type: 'error', message: error.message });
   }

@@ -379,6 +379,37 @@ instead, because Sass compiles ahead of time and cannot follow a runtime
 > scoped to `file_variables:read`. On any other plan, `pull` will fail with an
 > error from the Figma API.
 
+### Styles, not just variables
+
+Variables are the newer half of Figma's design data; most real libraries still
+carry their gradients, shadows, text styles and layout grids as **styles**.
+Those come across too, through a second pair of endpoints — `GET
+/v1/files/:key/styles` gives the names and ids, `GET /v1/files/:key/nodes` the
+values — and land as DTCG composite tokens:
+
+| Figma style | `$type` | Emitted as |
+| --- | --- | --- |
+| Fill (solid) | `color` | one custom property |
+| Fill (linear gradient) | `gradient` | one custom property, `linear-gradient(…)` |
+| Effect (shadows, blurs) | `effect` | `-shadow`, `-blur`, `-backdrop-blur` |
+| Text | `typography` | one property per sub-property, plus a utility class |
+| Layout grid | `grid` | one property per sub-property |
+
+A composite token has no single CSS spelling, so `build` splits it rather than
+stringifying it. `typography` becomes `--ds-text-body-font-size`,
+`--ds-text-body-line-height` and so on, plus a `typography.css` sheet whose
+`.ds-text-body` class *references those properties* — never repeats their
+values — so a theme override still reaches the class. An `effect` that carries
+only a blur emits only `--ds-effect-frosted-blur`; adding a blur to a shadow
+token never renames the shadow.
+
+Styles ride along with `pull` by default; `--no-styles` skips them. They are a
+separate endpoint and therefore a separate failure: if the styles request
+fails, the variables you already fetched are still written, with a warning.
+
+The plugin publishes the same tokens back as Figma styles — see
+[packages/figma-plugin/README.md](packages/figma-plugin/README.md#publishing-styles).
+
 ## 🧩 Direction B: components → Figma
 
 A JSON [registry](docs/registry.md) declares each component's variants,
@@ -509,8 +540,11 @@ honest comparisons:
 watches Figma or the codebase for changes and re-runs automatically), no UI
 for editing tokens or the registry, and no support for design systems outside
 Angular and Vue (`registry.framework` accepts only those two values). It
-also does not manage anything beyond Figma Variables — component-level Figma
-styles, effects, or text styles are out of scope.
+Component-level Figma **styles** are in scope in both directions — fills,
+gradients, text styles, effects and layout grids come across as DTCG
+composite tokens, and colour, gradient, effect and typography tokens can be
+published back as Figma styles — but a style is still a value, not a
+component: the plugin never generates the component that uses it.
 
 ## 🤝 Contributing
 

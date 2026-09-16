@@ -23,8 +23,35 @@ workaround for that, because there isn't one. On any other plan, `pull`
 fails with a 403/404 from the Figma API (see
 [docs/troubleshooting.md](troubleshooting.md)).
 
+Only the *variables* half of Direction A needs it. Figma **styles** — fills,
+gradients, text styles, effects, layout grids — come from
+`GET /v1/files/:key/styles` and `GET /v1/files/:key/nodes`, which any plan
+serves with a `file_read`-scoped token. So on a non-Enterprise file, `pull`
+still brings back everything the library keeps as styles; it is the variables
+request that fails.
+
 **Direction B** (components → Figma) has no such requirement: `story.to.design`
 and the bundled Figma plugin work on any plan that can run community plugins.
+
+## How is a text style or a shadow turned into CSS?
+
+A DTCG composite token holds an object, not a value, and the emitters split
+rather than stringify it — the alternative is what this project used to do
+wrong: falling through to `String($value)` and writing `[object Object]`, which
+is syntactically valid CSS that produces no shadow and no error.
+
+Two kinds of composite, split differently:
+
+- **Serialisable** (`shadow`, `effect`, `gradient`) have a CSS spelling, so
+  they stay one custom property: `--ds-effect-card-shadow: 0 1px 2px 0 #0001,
+  …`. An `effect` carrying a blur as well as shadows emits
+  `-shadow`, `-blur` and `-backdrop-blur` separately, so adding a blur never
+  renames the shadow.
+- **Expandable** (`typography`, `grid`) are a *set* of declarations with no
+  single spelling, so each sub-property gets its own custom property, and
+  typography additionally gets a class in `typography.css` that references
+  those properties. Referencing rather than repeating is the point: override
+  `--ds-text-body-font-size` in a theme and `.ds-text-body` follows.
 
 ## Why does CSS keep aliases as `var()` but SCSS resolves them to literals?
 

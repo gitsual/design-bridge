@@ -8,7 +8,8 @@
  */
 
 import { variablesToTokens } from '../packages/tokens/src/figma-variables.mjs';
-import { toCss, toTypeScript } from '../packages/tokens/src/build.mjs';
+import { stylesToTokens } from '../packages/tokens/src/figma-styles.mjs';
+import { toCss, toCssUtilities, toTypeScript } from '../packages/tokens/src/build.mjs';
 import { generate } from '../packages/generator/src/generate.mjs';
 
 const line = (label) => console.log(`\n\x1b[1m${label}\x1b[0m\n${'-'.repeat(label.length)}`);
@@ -53,6 +54,48 @@ console.log('\nNote: --ds-semantic-action stays a var(). Override the palette an
 console.log('every semantic token follows, which is what makes theming work.');
 console.log('\ntyped TS (excerpt):');
 console.log(toTypeScript(Theme.light, { prefix: 'ds' }).split('\n').slice(0, 6).join('\n'));
+
+// -- Direction A, second half: Figma Styles -> composite tokens ------------
+//
+// Styles live behind their own pair of endpoints (`/styles` for the names,
+// `/nodes` for the values), so they are canned separately -- and they are the
+// half that produces composite tokens rather than scalars.
+
+const stylePayload = {
+  styles: [
+    { node_id: '1:10', name: 'effect/card', style_type: 'EFFECT' },
+    { node_id: '1:11', name: 'text/body', style_type: 'TEXT' },
+  ],
+  nodes: {
+    '1:10': {
+      document: {
+        effects: [
+          { type: 'DROP_SHADOW', visible: true, offset: { x: 0, y: 1 }, radius: 2, spread: 0,
+            color: { r: 0.06, g: 0.09, b: 0.16, a: 0.1 } },
+          { type: 'DROP_SHADOW', visible: true, offset: { x: 0, y: 4 }, radius: 8, spread: -2,
+            color: { r: 0.06, g: 0.09, b: 0.16, a: 0.08 } },
+        ],
+      },
+    },
+    '1:11': {
+      document: {
+        style: {
+          fontFamily: 'Inter', fontSize: 15, fontWeight: 400,
+          lineHeightUnit: 'PERCENT', lineHeightPercentFontSize: 150, letterSpacing: 0,
+        },
+      },
+    },
+  },
+};
+
+line('A2. Figma Styles -> DTCG composites -> CSS properties + a utility class');
+const { tokens: styleTokens, skipped } = stylesToTokens(stylePayload);
+for (const note of skipped) console.warn(`skipped: ${note}`);
+console.log(toCss(styleTokens, { prefix: 'ds' }).trimEnd());
+console.log('\nA composite has no single CSS spelling, so it is split rather than');
+console.log('stringified: one property per sub-property, plus a class that');
+console.log('references them (never repeats their values, so themes still reach it):');
+console.log(toCssUtilities(styleTokens, { prefix: 'ds' }).trimEnd());
 
 // -- Direction B: registry -> stories + Figma import plan ------------------
 

@@ -58,12 +58,34 @@ to every semantic token that references it — that is the whole mechanism
 theming relies on. `toScss` resolves every alias to its literal value instead,
 because Sass compiles ahead of time and cannot follow a runtime `var()`.
 
+`pull` also fetches the file's **styles** unless `--no-styles` is given:
+`GET /v1/files/:key/styles` returns each style's name, id and type, and
+`GET /v1/files/:key/nodes?ids=…` returns the values behind them
+(`figma-styles.mjs`, ids batched in chunks of 50 because they travel in the
+query string). Fills become `color` or `gradient` tokens, text styles
+`typography`, effect styles `effect`, layout grids `grid` — written as
+`<group>.default.tokens.json`. A style nothing can express — an image fill, an
+empty effect list — is skipped by name rather than emitted as an empty token.
+Styles are a separate endpoint and therefore a separate failure: if that
+request fails, the variables already fetched are still written, with a warning.
+
+Composite tokens (`typography`, `grid`) have no single CSS spelling, so `build`
+expands them into one custom property per sub-property
+(`--ds-text-body-font-size`, …) and, for typography, also writes a
+`typography.css` sheet of `.ds-text-body`-style classes that *reference* those
+properties instead of repeating their values — so a per-mode override still
+reaches the class. The classes are mode-independent for exactly that reason and
+are written once, not once per mode. `shadow`, `effect` and `gradient` do have a
+CSS spelling and stay single properties.
+
 **Figma Variables require an Enterprise plan.** The `variables/local` REST
 endpoint is gated to Enterprise Figma organizations with a token that has the
 `file_variables:read` scope; on any other plan, `pull` fails with a 403/404
 from the Figma API. There is no workaround inside this tool — see
 [Prior Art](../README.md#prior-art--alternatives) in the README for
-alternatives that don't need it.
+alternatives that don't need it. The **styles** endpoints are not gated this
+way: they need only a `file_read`-scoped token, so a non-Enterprise file still
+yields its fills, text styles, effects and grids.
 
 ## Direction B: code → Figma
 
