@@ -33,8 +33,8 @@ fix(generator): escape slot content in Vue adapter
 docs(registry): document the selector field
 ```
 
-Do not add AI attribution lines (`Co-Authored-By`, "Generated with", etc.) to
-commits.
+The subject line is the whole message unless the change needs a body. No
+trailers beyond `BREAKING CHANGE:`.
 
 ## Before opening a PR
 
