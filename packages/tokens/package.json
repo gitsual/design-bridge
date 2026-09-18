@@ -1,6 +1,6 @@
 {
   "name": "@design-bridge/tokens",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Figma Variables -> W3C DTCG tokens -> CSS custom properties, SCSS and typed TypeScript.",
   "type": "module",
   "license": "MIT",
