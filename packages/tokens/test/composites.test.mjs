@@ -114,3 +114,18 @@ test('scalars still expand to exactly one unsuffixed pair', () => {
   const pairs = expandToken({ $type: 'color', $value: '#fff' }, ['color', 'bg']);
   assert.deepEqual(pairs, [{ suffix: [], value: '#fff' }]);
 });
+
+test("a typography style's font stack is quoted and spaced, not stringified", () => {
+  // Found in a real design package: the stack is a list, and falling through to
+  // String(array) yields `Noto Sans,Noto Sans Arabic` — no space after the
+  // comma and no quoting, so a multi-word family breaks the declaration.
+  const token = {
+    $type: 'typography',
+    $value: { fontFamily: ['Noto Sans Arabic', 'ForFuture', 'sans-serif'], fontSize: 14 },
+  };
+  const pairs = expandToken(token, ['text', 'body']);
+  assert.equal(
+    pairs.find((pair) => pair.suffix[0] === 'fontFamily').value,
+    '"Noto Sans Arabic", ForFuture, sans-serif',
+  );
+});

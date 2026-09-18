@@ -336,10 +336,21 @@ export function expandToken(token, path = [], options = {}) {
     return [{ suffix: [], value: $value.map(fontFamilyMember).join(', ') }];
   }
   if (EXPANDABLE_TYPES.has($type) && isComposite(token)) {
-    return Object.entries($value).map(([key, value]) => ({
-      suffix: [key],
-      value: formatValue({ $type: typeof value === 'number' ? 'number' : 'string', $value: value }, [...path, key], options),
-    }));
+    return Object.entries($value).map(([key, value]) => {
+      // A typography style's `fontFamily` is a font stack, and a stack is a
+      // list in DTCG. Falling through to `formatValue` would stringify the
+      // array as "Noto Sans,Noto Sans Arabic": no space after the comma and,
+      // worse, no quoting, so a family whose name is not a valid identifier
+      // breaks the declaration. It is the same value as a standalone
+      // fontFamily token, so it is spelled the same way.
+      if (Array.isArray(value)) {
+        return { suffix: [key], value: value.map(fontFamilyMember).join(', ') };
+      }
+      return {
+        suffix: [key],
+        value: formatValue({ $type: typeof value === 'number' ? 'number' : 'string', $value: value }, [...path, key], options),
+      };
+    });
   }
   return [{ suffix: [], value: formatValue(token, path, options) }];
 }
