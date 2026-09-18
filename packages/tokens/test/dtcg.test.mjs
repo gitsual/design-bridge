@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { walkTokens, parseAlias, resolveAliases, toKebabName, toCamelName, formatValue } from '../src/dtcg.mjs';
+import { walkTokens, parseAlias, resolveAliases, toKebabName, toCamelName, formatValue, colorToCss, expandToken } from '../src/dtcg.mjs';
 
 const tree = {
   palette: { blue: { 500: { $type: 'color', $value: '#1c4fd9' } } },
@@ -66,4 +66,121 @@ test('formatValue adds px to lengths but not to ratios', () => {
   assert.equal(formatValue({ $type: 'number', $value: 1.5 }, ['typography', 'line-height']), '1.5');
   assert.equal(formatValue({ $type: 'number', $value: 700 }, ['font', 'weight']), '700');
   assert.equal(formatValue({ $type: 'number', $value: 0 }, ['spacing', 'none']), '0');
+});
+
+
+/* ------------------------------------------------------- DTCG object colours
+ *
+ * Every one of these was a real defect: a Figma export whose colours are objects
+ * built 109 custom properties reading "[object Object]", and nothing failed.
+ */
+
+test('colorToCss prefers the hex fallback the design tool computed', () => {
+  // Not an optimisation. Hex is what the designer sees in Figma, and it is what
+  // the downstream WCAG check can parse -- oklch() would render and silently
+  // turn the accessibility report off.
+  const value = { colorSpace: 'oklch', components: [0.9577, 0.0017, 247.8396], hex: '#f0f1f2' };
+  assert.equal(colorToCss(value), '#f0f1f2');
+});
+
+test('colorToCss spells a hex-less colour in its own colour space', () => {
+  assert.equal(colorToCss({ colorSpace: 'oklch', components: [0.7, 0.15, 250] }), 'oklch(0.7 0.15 250)');
+  assert.equal(colorToCss({ colorSpace: 'srgb', components: [0.5, 0.25, 0.125] }), 'color(srgb 0.5 0.25 0.125)');
+  assert.equal(colorToCss({ colorSpace: 'hsl', components: [210, 50, 40] }), 'hsl(210 50% 40%)');
+});
+
+test('colorToCss omits a redundant fully-opaque alpha', () => {
+  assert.equal(colorToCss({ colorSpace: 'oklch', components: [0.7, 0.15, 250], alpha: 1 }), 'oklch(0.7 0.15 250)');
+  assert.equal(colorToCss({ colorSpace: 'oklch', components: [0.7, 0.15, 250], alpha: 0.4 }), 'oklch(0.7 0.15 250 / 0.4)');
+});
+
+test('colorToCss keeps the DTCG "none" component', () => {
+  assert.equal(colorToCss({ colorSpace: 'oklch', components: [0.7, 'none', 250] }), 'oklch(0.7 none 250)');
+});
+
+test('colorToCss refuses a colour it cannot spell', () => {
+  assert.equal(colorToCss({ colorSpace: 'cmyk', components: [0, 0, 0, 1] }), null);
+  assert.equal(colorToCss({ colorSpace: 'oklch' }), null);
+});
+
+test('formatValue renders an object colour instead of stringifying it', () => {
+  const token = { $type: 'color', $value: { colorSpace: 'oklch', components: [0.95, 0.001, 247], hex: '#f0f1f2' } };
+  assert.equal(formatValue(token, ['color', 'taupe', '50']), '#f0f1f2');
+});
+
+test('formatValue fails loudly, naming the token, on a colour with no CSS spelling', () => {
+  const token = { $type: 'color', $value: { colorSpace: 'cmyk', components: [0, 0, 0, 1] } };
+  assert.throws(
+    () => formatValue(token, ['color', 'ink', '900']),
+    /color\.ink\.900.*cmyk/s
+  );
+});
+
+/* ------------------------------------------------ aliases inside composites */
+
+test('resolveAliases descends into a typography composite', () => {
+  const source = {
+    font: { size: { 500: { $type: 'number', $value: 24 } }, weight: { bold: { $type: 'number', $value: 700 } } },
+    typography: {
+      heading: {
+        $type: 'typography',
+        $value: { fontSize: '{font.size.500}', fontWeight: '{font.weight.bold}', textTransform: 'none' },
+      },
+    },
+  };
+  const resolved = resolveAliases(source);
+  assert.deepEqual(resolved.typography.heading.$value, { fontSize: 24, fontWeight: 700, textTransform: 'none' });
+});
+
+test('resolveAliases descends into a shadow layer list', () => {
+  const source = {
+    palette: { shade: { $type: 'color', $value: '#00000033' } },
+    shadow: { card: { $type: 'shadow', $value: [{ offsetX: 0, offsetY: 2, blur: 4, color: '{palette.shade}' }] } },
+  };
+  const resolved = resolveAliases(source);
+  assert.equal(resolved.shadow.card.$value[0].color, '#00000033');
+});
+
+test('resolveAliases leaves a colour object untouched', () => {
+  // `components` are numbers and `hex` is not a brace string, so descending into
+  // a colour must be a no-op rather than a corruption.
+  const value = { colorSpace: 'oklch', components: [0.7, 0.15, 250], hex: '#3b82f6' };
+  const resolved = resolveAliases({ color: { blue: { $type: 'color', $value: value } } });
+  assert.deepEqual(resolved.color.blue.$value, value);
+});
+
+test('a cycle through a composite member is caught, not a stack overflow', () => {
+  const source = {
+    a: { $type: 'typography', $value: { fontSize: '{b}' } },
+    b: { $type: 'number', $value: '{a}' },
+  };
+  assert.throws(() => resolveAliases(source), /Circular token alias/);
+});
+
+
+/* ------------------------------------------------------------- font stacks */
+
+test('a font stack written as a DTCG array becomes one comma-separated value', () => {
+  const token = {
+    $type: 'fontFamily',
+    $value: ['{font.family.face.noto-sans}', 'Noto Sans Mono', 'sans-serif'],
+  };
+  const [{ suffix, value }] = expandToken(token, ['font', 'family', 'stack', 'ui']);
+  assert.deepEqual(suffix, []);
+  assert.equal(value, '{font.family.face.noto-sans}, "Noto Sans Mono", sans-serif');
+});
+
+test('a reference embedded in a longer string is refused, with the fix in the message', () => {
+  // Measured on a real export: this shape reaches the stylesheet verbatim and
+  // the browser drops the declaration, so the font stack stops applying and
+  // nothing says so.
+  const token = { $type: 'fontFamily', $value: '{font.family.face.mono}, {font.family.fallback.mono}' };
+  assert.throws(
+    () => formatValue(token, ['font', 'family', 'stack', 'mono']),
+    /font\.family\.stack\.mono.*entire value.*array/s
+  );
+});
+
+test('a plain string with no braces is still a plain string', () => {
+  assert.equal(formatValue({ $type: 'fontFamily', $value: 'Noto Sans' }, ['a']), 'Noto Sans');
 });
