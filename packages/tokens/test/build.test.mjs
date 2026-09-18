@@ -47,3 +47,26 @@ test('toFlatJson produces a resolved name -> value map', () => {
     'spacing-md': '16px',
   });
 });
+
+
+test('every member of a font stack gets its own var()', () => {
+  // One declaration, several references: overriding a single face in a theme
+  // must still reach the stack, which a flattened literal would not allow.
+  const css = toCss({
+    font: {
+      family: {
+        face: { 'noto-sans': { $type: 'fontFamily', $value: 'Noto Sans' } },
+        stack: { ui: { $type: 'fontFamily', $value: ['{font.family.face.noto-sans}', 'sans-serif'] } },
+      },
+    },
+  }, { prefix: 'hmi' });
+  assert.match(css, /--hmi-font-family-stack-ui: var\(--hmi-font-family-face-noto-sans\), sans-serif;/);
+});
+
+test('a typography composite references its parts instead of inlining them', () => {
+  const css = toCss({
+    font: { size: { 500: { $type: 'number', $value: 24 } } },
+    typography: { heading: { $type: 'typography', $value: { fontSize: '{font.size.500}' } } },
+  }, { prefix: 'hmi' });
+  assert.match(css, /--hmi-typography-heading-font-size: var\(--hmi-font-size-500\);/);
+});

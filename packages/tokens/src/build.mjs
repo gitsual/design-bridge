@@ -33,22 +33,36 @@ function cssName(path, prefix) {
 export function toCss(tokens, { selector = ':root', prefix = '' } = {}) {
   const lines = [];
   for (const { path, token } of walkTokens(tokens)) {
-    const alias = typeof token.$value === 'string' && /^\{[^}]+\}$/.test(token.$value.trim());
     if (token.$description) lines.push(`  /* ${token.$description} */`);
-    if (alias) {
-      lines.push(
-        `  ${cssName(path, prefix)}: ` +
-          `var(${cssName(token.$value.trim().slice(1, -1).split('.'), prefix)});`,
-      );
-      continue;
-    }
     // A composite contributes more than one declaration; a scalar contributes
-    // exactly one, with an empty suffix. Both go through the same loop.
+    // exactly one, with an empty suffix. Both go through the same loop, and so
+    // does the alias check -- a `typography` token whose `fontSize` is
+    // `{font.size.500}` deserves the same live `var()` as a scalar alias, and
+    // handling only the scalar wrote the braces into the stylesheet verbatim,
+    // where the browser ignores the declaration.
     for (const { suffix, value } of expandToken(token, path)) {
-      lines.push(`  ${cssName([...path, ...suffix], prefix)}: ${value};`);
+      lines.push(`  ${cssName([...path, ...suffix], prefix)}: ${cssValue(value, prefix)};`);
     }
   }
   return `${BANNER}\n${selector} {\n${lines.join('\n')}\n}\n`;
+}
+
+/**
+ * `"{palette.blue.500}"` -> `"var(--ds-palette-blue-500)"`; anything else unchanged.
+ *
+ * Comma-separated lists are mapped member by member, because a font stack is one
+ * declaration made of several references and each deserves its own `var()`.
+ */
+function cssValue(value, prefix) {
+  if (typeof value !== 'string') return value;
+  return value
+    .split(',')
+    .map((part) => {
+      const trimmed = part.trim();
+      if (!/^\{[^}]+\}$/.test(trimmed)) return trimmed;
+      return `var(${cssName(trimmed.slice(1, -1).split('.'), prefix)})`;
+    })
+    .join(', ');
 }
 
 /**
