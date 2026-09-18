@@ -184,3 +184,18 @@ test('a reference embedded in a longer string is refused, with the fix in the me
 test('a plain string with no braces is still a plain string', () => {
   assert.equal(formatValue({ $type: 'fontFamily', $value: 'Noto Sans' }, ['a']), 'Noto Sans');
 });
+
+test('a hex with a separate alpha keeps its transparency', () => {
+  // Figma exports an overlay as an opaque hex plus an `alpha` member. Preferring
+  // the hex and dropping the alpha turns a 4% scrim into a solid slab, which is
+  // exactly what a real design package shipped and what the swatch page showed:
+  // seven "alpha" steps, all painted the same opaque colour.
+  assert.equal(
+    colorToCss({ colorSpace: 'oklch', components: [0.29, 0.02, 227], hex: '#232e33', alpha: 0.0392 }),
+    '#232e330a',
+  );
+  // Opaque stays exactly as it was: three- and six-digit hexes are untouched.
+  assert.equal(colorToCss({ hex: '#232e33', alpha: 1, colorSpace: 'srgb', components: [0, 0, 0] }), '#232e33');
+  // An eight-digit hex already carries its own alpha and is not doubled up.
+  assert.equal(colorToCss({ hex: '#232e3380', alpha: 0.5, colorSpace: 'srgb', components: [0, 0, 0] }), '#232e3380');
+});

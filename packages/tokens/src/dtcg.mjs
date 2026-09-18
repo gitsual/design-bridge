@@ -165,7 +165,22 @@ export function colorToCss(value) {
   if (!value || typeof value !== 'object') return null;
 
   const { colorSpace, components, alpha, hex } = value;
-  if (typeof hex === 'string' && hex.trim()) return hex.trim();
+  if (typeof hex === 'string' && hex.trim()) {
+    const trimmed = hex.trim();
+    // A design tool exports an overlay as an OPAQUE hex plus a separate
+    // `alpha`, so returning the hex alone turns a 4% scrim into a solid slab.
+    // The alpha becomes the eighth hex digit, which every browser understands
+    // and which the contrast checks downstream can still parse.
+    const opaque = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(trimmed);
+    if (opaque && typeof alpha === 'number' && alpha >= 0 && alpha < 1) {
+      const rgb = trimmed.length === 4
+        ? trimmed.slice(1).split('').map((digit) => digit + digit).join('')
+        : trimmed.slice(1);
+      const byte = Math.round(alpha * 255).toString(16).padStart(2, '0');
+      return `#${rgb}${byte}`;
+    }
+    return trimmed;
+  }
   if (typeof colorSpace !== 'string' || !Array.isArray(components)) return null;
 
   const percentAt = PERCENT_SPACES[colorSpace] ?? [];
