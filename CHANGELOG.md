@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [generator 0.1.2] - 2026-09-22
+
+### Fixed
+
+- Angular stories build the input bindings from the args at render time.
+  0.1.1 bound every declared control statically, which passed `undefined` to
+  the inputs a variant did not set and overrode the component's defaults.
+
 ## [generator 0.1.1] - 2026-09-22
 
 ### Fixed
