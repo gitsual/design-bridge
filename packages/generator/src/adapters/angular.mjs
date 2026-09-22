@@ -14,9 +14,19 @@ import { toArgTypes } from '../argtypes.mjs';
 
 const FIGMA_ROOT = '[data-figma-root]';
 
-/** `{ variant: 'primary', disabled: true }` -> `[variant]="variant" [disabled]="disabled"`. */
-function propertyBindings(props = {}) {
-  return Object.keys(props)
+/**
+ * `[variant]="variant" [disabled]="disabled"` for every prop the story can
+ * receive: the declared controls first, then whatever the variant sets on top.
+ *
+ * Binding only the variant's props looks right in the canvas and breaks in the
+ * controls panel. Vue gets this for free through `v-bind="args"`; Angular has no
+ * spread for inputs, so a control whose prop is not in the template moves
+ * nothing on screen, and the component reads as broken when it is the story
+ * that ignores the arg.
+ */
+function propertyBindings(controls = [], props = {}) {
+  const keys = new Set([...controls.map((control) => control.prop), ...Object.keys(props)]);
+  return [...keys]
     .map((key) => `[${key}]="${key}"`)
     .join(' ');
 }
@@ -41,7 +51,7 @@ export function renderStoryFile({ registry, component }) {
     if (!variant.slot || !selector) {
       return `export const ${name}: Story = {\n  name: ${JSON.stringify(variant.label)},\n  args: ${args},\n};`;
     }
-    const bindings = propertyBindings(variant.props);
+    const bindings = propertyBindings(component.controls, variant.props);
     const open = bindings ? `<${selector} ${bindings}>` : `<${selector}>`;
     return [
       `export const ${name}: Story = {`,

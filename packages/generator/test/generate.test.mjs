@@ -97,6 +97,23 @@ test('angular emits class-parameterised types and property bindings', () => {
   assert.match(story, /<acme-button \[variant\]="variant">Save<\/acme-button>/);
 });
 
+test('angular binds every declared control, not only the props the variant sets', () => {
+  // A variant that only sets `variant` still has to bind `disabled` and `size`:
+  // otherwise the Storybook control for those props moves nothing on screen,
+  // which reads as a broken component rather than a story that ignores args.
+  const registry = structuredClone(base);
+  registry.framework = 'angular';
+  registry.components[1].selector = 'acme-button';
+  registry.components[1].import = { module: '../../lib/button.component', symbol: 'ButtonComponent' };
+  registry.components[1].controls = [
+    { prop: 'variant', kind: 'select', options: ['primary', 'ghost'] },
+    { prop: 'disabled', kind: 'boolean' },
+    { prop: 'size', kind: 'text' },
+  ];
+  const story = generate(registry).files.get('atoms-button.stories.ts');
+  assert.match(story, /<acme-button \[variant\]="variant" \[disabled\]="disabled" \[size\]="size">Save<\/acme-button>/);
+});
+
 test('angular refuses a slotted component with no selector', () => {
   // Previously this degraded to a props-only story and the projected content
   // vanished without a word. Silent data loss in a generator is worse than a
