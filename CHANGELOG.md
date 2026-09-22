@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [generator 0.1.1] - 2026-09-22
+
+### Fixed
+
+- Angular stories bind every declared control in the template, not only the
+  props the variant sets. A control for an unbound prop moved nothing on
+  screen and read as a broken component.
+
 ## [0.1.0] - 2026-09-16
 
 Initial release.
