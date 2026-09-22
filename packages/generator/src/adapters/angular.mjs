@@ -15,21 +15,26 @@ import { toArgTypes } from '../argtypes.mjs';
 const FIGMA_ROOT = '[data-figma-root]';
 
 /**
- * `[variant]="variant" [disabled]="disabled"` for every prop the story can
- * receive: the declared controls first, then whatever the variant sets on top.
+ * Emitted once per file. Angular has no `v-bind="args"`, so the template binds
+ * the inputs by name -- and WHICH names is decided when the story renders, not
+ * when the file is generated.
  *
- * Binding only the variant's props looks right in the canvas and breaks in the
- * controls panel. Vue gets this for free through `v-bind="args"`; Angular has no
- * spread for inputs, so a control whose prop is not in the template moves
- * nothing on screen, and the component reads as broken when it is the story
- * that ignores the arg.
+ * Binding only the variant's props leaves every other control moving nothing
+ * on screen. Binding every declared control passes `undefined` to the inputs
+ * the variant does not set, and `undefined` overrides the component's own
+ * default: a button rendered `--undefined` instead of `--fill`. Reading the
+ * args at render time avoids both, and Storybook re-renders the template
+ * whenever a control changes, so a control that was absent starts binding the
+ * moment it gets a value.
  */
-function propertyBindings(controls = [], props = {}) {
-  const keys = new Set([...controls.map((control) => control.prop), ...Object.keys(props)]);
-  return [...keys]
-    .map((key) => `[${key}]="${key}"`)
-    .join(' ');
-}
+const BIND_INPUTS = [
+  '/** Bind the inputs this render has a value for; an absent one keeps the component default. */',
+  'const bindInputs = (args: Record<string, unknown>) =>',
+  '  Object.keys(args)',
+  '    .filter((key) => args[key] !== undefined)',
+  '    .map((key) => `[${key}]="${key}"`)',
+  "    .join(' ');",
+].join('\n');
 
 export function renderStoryFile({ registry, component }) {
   const { import: imp } = component;
@@ -51,8 +56,7 @@ export function renderStoryFile({ registry, component }) {
     if (!variant.slot || !selector) {
       return `export const ${name}: Story = {\n  name: ${JSON.stringify(variant.label)},\n  args: ${args},\n};`;
     }
-    const bindings = propertyBindings(component.controls, variant.props);
-    const open = bindings ? `<${selector} ${bindings}>` : `<${selector}>`;
+    const open = `<${selector} \${bindInputs(args)}>`;
     return [
       `export const ${name}: Story = {`,
       `  name: ${JSON.stringify(variant.label)},`,
@@ -84,6 +88,7 @@ export function renderStoryFile({ registry, component }) {
     'export default meta;',
     `type Story = StoryObj<${symbol}>;`,
     '',
+    ...(variants.some((variant) => variant.slot) ? [BIND_INPUTS, ''] : []),
     stories.join('\n\n'),
     '',
   ].join('\n');

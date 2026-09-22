@@ -86,7 +86,7 @@ test('vue slot variants render a template, prop-only variants use args', () => {
   assert.doesNotMatch(story.split('Variant2Lines')[1], /template:/);
 });
 
-test('angular emits class-parameterised types and property bindings', () => {
+test('angular emits class-parameterised types and a render-time template', () => {
   const registry = structuredClone(base);
   registry.framework = 'angular';
   registry.components[1].selector = 'acme-button';
@@ -94,13 +94,17 @@ test('angular emits class-parameterised types and property bindings', () => {
   const story = generate(registry).files.get('atoms-button.stories.ts');
   assert.match(story, /import \{ ButtonComponent \} from/);
   assert.match(story, /const meta: Meta<ButtonComponent>/);
-  assert.match(story, /<acme-button \[variant\]="variant">Save<\/acme-button>/);
+  assert.match(story, /<acme-button \$\{bindInputs\(args\)\}>Save<\/acme-button>/);
 });
 
-test('angular binds every declared control, not only the props the variant sets', () => {
-  // A variant that only sets `variant` still has to bind `disabled` and `size`:
-  // otherwise the Storybook control for those props moves nothing on screen,
-  // which reads as a broken component rather than a story that ignores args.
+test('angular binds the args the story has when it renders, never an absent one', () => {
+  // Binding every declared control statically passes `undefined` to the
+  // inputs the variant does not set, and `undefined` overrides the component's
+  // own default: a button rendered `hmi-button--undefined` instead of `--fill`.
+  // Binding only the variant's props breaks the other way: the control for an
+  // unbound prop moves nothing. Vue gets both right through `v-bind="args"`;
+  // Angular has no spread, so the template is built from the args at render
+  // time, and Storybook re-renders it whenever a control changes.
   const registry = structuredClone(base);
   registry.framework = 'angular';
   registry.components[1].selector = 'acme-button';
@@ -108,10 +112,12 @@ test('angular binds every declared control, not only the props the variant sets'
   registry.components[1].controls = [
     { prop: 'variant', kind: 'select', options: ['primary', 'ghost'] },
     { prop: 'disabled', kind: 'boolean' },
-    { prop: 'size', kind: 'text' },
   ];
   const story = generate(registry).files.get('atoms-button.stories.ts');
-  assert.match(story, /<acme-button \[variant\]="variant" \[disabled\]="disabled" \[size\]="size">Save<\/acme-button>/);
+  assert.match(story, /const bindInputs = \(args: Record<string, unknown>\) =>/);
+  assert.match(story, /args\[key\] !== undefined/);
+  assert.match(story, /<acme-button \$\{bindInputs\(args\)\}>Save<\/acme-button>/);
+  assert.doesNotMatch(story, /\[variant\]="variant"/);
 });
 
 test('angular refuses a slotted component with no selector', () => {
