@@ -61,6 +61,15 @@ test('toKebabName and toCamelName agree on the same path', () => {
   assert.equal(toKebabName(['palette', 'blue', '500']), 'palette-blue-500');
 });
 
+test('formatValue keeps a flex proportion bare when the segment only ends in the marker', () => {
+  // Design names a column's share `details-grow`; with `1px` the flex item
+  // stops growing at all.
+  assert.equal(formatValue({ $type: 'number', $value: 2 }, ['admin-panel', 'central', 'main-grow']), '2');
+  assert.equal(formatValue({ $type: 'number', $value: 0 }, ['card', 'shrink']), '0');
+  assert.equal(formatValue({ $type: 'number', $value: 1 }, ['card', 'flex-shrink']), '1');
+  assert.equal(formatValue({ $type: 'number', $value: 16 }, ['card', 'growth-gap']), '16px');
+});
+
 test('formatValue adds px to lengths but not to ratios', () => {
   assert.equal(formatValue({ $type: 'number', $value: 16 }, ['spacing', 'md']), '16px');
   assert.equal(formatValue({ $type: 'number', $value: 1.5 }, ['typography', 'line-height']), '1.5');

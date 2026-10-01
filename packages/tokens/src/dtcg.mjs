@@ -10,7 +10,7 @@
 /** Path segments whose numeric tokens are ratios, not CSS lengths. */
 export const DEFAULT_UNITLESS = [
   'line-height', 'lineheight', 'weight', 'font-weight', 'fontweight',
-  'opacity', 'z-index', 'zindex', 'ratio', 'scale', 'flex',
+  'opacity', 'z-index', 'zindex', 'ratio', 'scale', 'flex', 'grow', 'shrink',
   // Grid styles carry a column count, which is a quantity and not a length.
   'count',
 ];
@@ -205,8 +205,9 @@ export function colorToCss(value) {
  * Append the unit a `number` token needs to be usable in CSS.
  *
  * Some numeric tokens are ratios, not lengths: line heights, font weights,
- * opacity and z-index must stay bare or the CSS is invalid. `unitless` holds
- * path segments that mark a token as dimensionless.
+ * opacity, z-index and flex proportions must stay bare or the CSS is invalid.
+ * `unitless` holds path segments that mark a token as dimensionless, alone or
+ * as the last word of a hyphenated segment.
  */
 export function formatValue(token, path = [], { numberUnit = 'px', unitless = DEFAULT_UNITLESS } = {}) {
   const { $type, $value } = token;
@@ -240,7 +241,11 @@ export function formatValue(token, path = [], { numberUnit = 'px', unitless = DE
   }
   if ($type !== 'number' || typeof $value !== 'number') return String($value);
   if ($value === 0) return '0';
-  const isUnitless = path.some((segment) => unitless.includes(segment.toLowerCase()));
+  // A marker also counts at the end of a compound segment (`details-grow`).
+  const isUnitless = path.some((segment) => {
+    const name = segment.toLowerCase();
+    return unitless.some((marker) => name === marker || name.endsWith(`-${marker}`));
+  });
   return isUnitless ? String($value) : `${$value}${numberUnit}`;
 }
 
