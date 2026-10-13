@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [generator 0.1.4, registry 0.1.1] - 2026-10-13
+
+### Added
+
+- `default` on a control: the docs table shows it as the default value, so
+  Angular without compodoc shows it too. Strings are quoted as in the source.
+- The registry refuses a `description` that is not a string and a `select` or
+  `radio` default that is not one of its options.
+
 ## [generator 0.1.3] - 2026-10-13
 
 ### Added

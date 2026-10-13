@@ -1,6 +1,6 @@
 {
   "name": "@design-bridge/generator",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Generate Storybook stories and Figma import manifests from a component registry.",
   "type": "module",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "src"
   ],
   "dependencies": {
-    "@design-bridge/registry": "0.1.0"
+    "@design-bridge/registry": "0.1.1"
   },
   "scripts": {
     "test": "node --test test/*.test.mjs"

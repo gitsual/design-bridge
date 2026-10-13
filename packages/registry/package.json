@@ -1,6 +1,6 @@
 {
   "name": "@design-bridge/registry",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Framework-agnostic component registry: schema validation and dependency layering.",
   "type": "module",
   "license": "MIT",
