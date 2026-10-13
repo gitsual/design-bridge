@@ -11,6 +11,7 @@
 
 import { exportName, storyTitle, literal, indentBlock } from '../naming.mjs';
 import { toArgTypes } from '../argtypes.mjs';
+import { docsParameter } from '../parts.mjs';
 
 const FIGMA_ROOT = '[data-figma-root]';
 
@@ -82,6 +83,7 @@ export function renderStoryFile({ registry, component }) {
     '  parameters: {',
     `    s2d: { type: 'component', initArgs: { ':selector': ${JSON.stringify(FIGMA_ROOT)}, ':width': 'auto', ':height': 'auto' } },`,
     `    designBridge: { id: ${JSON.stringify(component.id)}, family: ${JSON.stringify(component.family)} },`,
+    ...docsParameter(component, 'angular'),
     '  },',
     '};',
     '',

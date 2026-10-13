@@ -11,12 +11,15 @@ import { renderStoryFile as renderVue } from './adapters/vue.mjs';
 import { renderStoryFile as renderAngular } from './adapters/angular.mjs';
 import { buildOrganizerManifest } from './organizer.mjs';
 import { slug } from './naming.mjs';
+import { partErrors } from './parts.mjs';
 
 const ADAPTERS = { vue: renderVue, angular: renderAngular };
 
 export function generate(registry) {
-  const { valid, errors } = validateRegistry(registry);
-  if (!valid) {
+  const { errors: schemaErrors } = validateRegistry(registry);
+  // `parts` is the generator's own: the registry schema predates it.
+  const errors = [...schemaErrors, ...partErrors(registry?.components)];
+  if (errors.length > 0) {
     throw new AggregateError(
       errors.map((message) => new Error(message)),
       `Invalid registry (${errors.length} problem${errors.length === 1 ? '' : 's'})`,

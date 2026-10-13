@@ -52,6 +52,7 @@ one run.
 | `variants` | array of [variant](#variant) | no | Defaults to a single `{ label: 'Default', props: {} }` story if omitted or empty (`generate.mjs` / `organizer.mjs` apply this default, not the schema). |
 | `controls` | array of [control](#control) | no | Storybook `argTypes` for this component's props. |
 | `selector` | `string` | conditional | **Required** when `framework` is `angular` and any variant declares `slot`. Must be a non-empty string when present. See the [note below](#the-selector-field). |
+| `parts` | array of [part](#part) | no | Components written only inside this one (an item inside a select). They get no story of their own; their props are documented on this component's docs page. Checked by the generator, not by the registry schema. |
 
 ### `import`
 
@@ -67,6 +68,21 @@ one run.
 | `label` | `string` | yes | Non-empty. Storybook export name is derived from it (`exportName`, in `packages/generator/src/naming.mjs`) — it is ASCII-folded and Pascal-cased, and prefixed with `Variant` if it would otherwise start with a digit. It is also the Figma variant name fallback and the join key suffix in the organizer manifest (`{storyTitle}/{label}`). |
 | `props` | `object` | no | Must be a plain object (not an array) if present. Becomes the story's `args`. Only `string`/`number`/`boolean` values survive into the Figma organizer manifest as variant properties (`scalarProps` in `organizer.mjs`) — objects, arrays and functions are dropped there, though they still work as ordinary Storybook args. |
 | `slot` | `string` | no | Must be a string if present. Marks the variant as needing projected content (`<ng-content>` / Vue slot) instead of plain `args` — see [pipeline.md](./pipeline.md). |
+
+### Part
+
+A component that only makes sense inside another has no story of its own: it
+would show nothing alone. Listing it under its whole's `parts` puts a table of
+its props on the whole's docs page (`parameters.docs.description.component`).
+The table is built from the registry, not from a docgen, so an Angular
+Storybook without compodoc shows it the same way a Vue one does.
+
+| Field | Type | Required | Rules |
+|---|---|---|---|
+| `name` | `string` | yes | Non-empty. The tag the Vue docs show (`<SelectItem>`), and the fallback for Angular. |
+| `selector` | `string` | no | The tag the Angular docs show (`<app-select-item>`). |
+| `id` | `string` | no | Not read by the generator; kept so the part can be traced back to its own registry entry. |
+| `controls` | array of [control](#control) | no | One table row per control. With none, the docs say the part takes no props. |
 
 ### Control
 

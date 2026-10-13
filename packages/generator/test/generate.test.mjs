@@ -140,3 +140,59 @@ test('a component with no variants still gets a Default story', () => {
   assert.match(files.get('atoms-x.stories.ts'), /export const Default: Story/);
   assert.equal(organizer.items[0].name, 'acme/atoms/X/Default');
 });
+
+// A part is a component written only inside another (an item inside a
+// select): it has no story of its own, so its props are documented on the
+// page of its whole. Read from the registry, not from a docgen, so Angular
+// without compodoc shows them as Vue does.
+function withPart(framework) {
+  const registry = structuredClone(base);
+  registry.framework = framework;
+  registry.components[1].parts = [{
+    id: 'button-badge', name: 'ButtonBadge', selector: 'acme-button-badge',
+    controls: [
+      { prop: 'value', kind: 'text', description: 'What it shows.' },
+      { prop: 'tone', kind: 'select', options: ['neutral', 'danger'] },
+    ],
+  }];
+  if (framework === 'angular') {
+    registry.components[1].selector = 'acme-button';
+    registry.components[1].import = { module: '../../lib/button.component', symbol: 'ButtonComponent' };
+  }
+  return registry;
+}
+
+const description = (story) => JSON.parse(story.match(/description: \{ component: (".*") \}/)[1]);
+
+test('the props of a part are documented on the page of its whole, by its tag in each framework', () => {
+  const vue = description(generate(withPart('vue')).files.get('atoms-button.stories.ts'));
+  assert.match(vue, /`<ButtonBadge>`/);
+  assert.match(vue, /\| `value` \| text \| {2}\| What it shows\. \|/);
+  assert.match(vue, /\| `tone` \| select \| `neutral`, `danger` \| {2}\|/);
+  const angular = description(generate(withPart('angular')).files.get('atoms-button.stories.ts'));
+  assert.match(angular, /`<acme-button-badge>`/);
+  assert.match(angular, /\| `tone` \| select \| `neutral`, `danger` \| {2}\|/);
+});
+
+test('a part with no props says so instead of drawing an empty table', () => {
+  const registry = withPart('vue');
+  registry.components[1].parts[0].controls = [];
+  const text = description(generate(registry).files.get('atoms-button.stories.ts'));
+  assert.match(text, /`<ButtonBadge>` takes no props\./);
+  assert.doesNotMatch(text, /\| Prop \|/);
+});
+
+test('a component without parts has no docs description, as before', () => {
+  for (const story of generate(base).files.values()) assert.doesNotMatch(story, /description:/);
+});
+
+test('a malformed part is refused with the reason', () => {
+  const registry = withPart('vue');
+  registry.components[1].parts = [{ controls: [] }, 'badge'];
+  assert.throws(
+    () => generate(registry),
+    (error) => error instanceof AggregateError
+      && error.errors.some((e) => /components\[1\]\.parts\[0\]\.name: is required/.test(e.message))
+      && error.errors.some((e) => /components\[1\]\.parts\[1\]: must be an object/.test(e.message)),
+  );
+});
