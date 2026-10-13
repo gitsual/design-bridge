@@ -196,3 +196,22 @@ test('a malformed part is refused with the reason', () => {
       && error.errors.some((e) => /components\[1\]\.parts\[1\]: must be an object/.test(e.message)),
   );
 });
+
+const argTypesOf = (story) => story.slice(story.indexOf('argTypes:'), story.indexOf('};'));
+
+test('a control default appears in the docs table as its default value', () => {
+  const registry = structuredClone(base);
+  registry.components[1].controls = [
+    { prop: 'variant', kind: 'select', options: ['primary', 'ghost'], default: 'primary', description: 'Colour role of the button.' },
+    { prop: 'disabled', kind: 'boolean', default: false },
+  ];
+  const argTypes = argTypesOf(generate(registry).files.get('atoms-button.stories.ts'));
+  assert.match(argTypes, /"description": "Colour role of the button\."/);
+  assert.match(argTypes, /"summary": "'primary'"/);
+  assert.match(argTypes, /"summary": "false"/);
+});
+
+test('a control without default has no default value row, as before', () => {
+  const argTypes = argTypesOf(generate(base).files.get('atoms-button.stories.ts'));
+  assert.doesNotMatch(argTypes, /defaultValue/);
+});

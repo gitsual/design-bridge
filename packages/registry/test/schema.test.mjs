@@ -106,3 +106,25 @@ test('a present selector must be a non-empty string', () => {
   const { errors } = validateRegistry(broken);
   assert.match(errors.join('\n'), /selector.*non-empty/);
 });
+
+test('a select default must be one of its options', () => {
+  const bad = structuredClone(valid);
+  bad.components[1].controls[0].default = 'outline';
+  const { valid: ok, errors } = validateRegistry(bad);
+  assert.equal(ok, false);
+  assert.match(errors.join('\n'), /controls\[0\]\.default/);
+});
+
+test('a control description must be a string', () => {
+  const bad = structuredClone(valid);
+  bad.components[1].controls[0].description = 42;
+  const { valid: ok, errors } = validateRegistry(bad);
+  assert.equal(ok, false);
+  assert.match(errors.join('\n'), /controls\[0\]\.description/);
+});
+
+test('a control with a valid default and description validates', () => {
+  const good = structuredClone(valid);
+  Object.assign(good.components[1].controls[0], { default: 'primary', description: 'Colour role.' });
+  assert.deepEqual(validateRegistry(good), { valid: true, errors: [] });
+});

@@ -44,6 +44,12 @@ function validateControl(control, path, errors) {
   if ((control.kind === 'select' || control.kind === 'radio') && !Array.isArray(control.options)) {
     fail(errors, `${path}.options`, `is required for kind "${control.kind}"`);
   }
+  if (control.description !== undefined && typeof control.description !== 'string') {
+    fail(errors, `${path}.description`, 'must be a string');
+  }
+  if (control.default !== undefined && Array.isArray(control.options) && !control.options.includes(control.default)) {
+    fail(errors, `${path}.default`, `must be one of its options: ${control.options.join(', ')}`);
+  }
 }
 
 function validateComponent(component, path, errors, seenIds) {
