@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [generator 0.1.3] - 2026-10-13
+
+### Added
+
+- `parts` on a component: components written only inside it (an item inside
+  a select). They get no story; their props are a table on the docs page of
+  their whole, built from the registry so Angular without compodoc shows them
+  too. A malformed part is refused with the reason.
+
 ## [generator 0.1.2] - 2026-09-22
 
 ### Fixed
